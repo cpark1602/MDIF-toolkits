@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mdif-toolkits"   # The unique name users will type into 'pip install'
+version = "0.1.0"
+authors = [
+    { name="Your Name", email="your.email@example.com" }
+]
+description = "Molecular Dynamics Interfacial Framework toolkits for atomistic analysis."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "numpy>=1.19.5",
+    "scipy>=1.5.3",
+    "matplotlib>=3.3.4",
+    "mdanalysis>=2.0.0", # (Add any explicit MD parsing dependencies here)
+]
+
+[project.urls]
+"Homepage" = "https://github.com/cpark1602/MDIF-toolkits"
+"Bug Tracker" = "https://github.com/cpark1602/MDIF-toolkits/issues"
+
+[project.scripts]
+mdif-run = "mdif_toolkits.main:main" # Optional terminal execution shortcut
