@@ -1,33 +1,33 @@
 #!/usr/bin/env python
 
-import MDAnalysis as mda
+#import MDAnalysis as mda
 import numpy as np
-import matplotlib.pyplot as pl
-import scipy.constants
-import scipy.stats 
+#import matplotlib.pyplot as pl
+#import scipy.constants
+#import scipy.stats 
 import os
-import shutil    # copy file
+#import shutil    # copy file
 import time
-import re
+#import re
 
 import warnings
 warnings.filterwarnings(action='once')
 
-import matplotlib.pyplot as pl
-from matplotlib import rc
-import matplotlib.ticker as ticker
-from matplotlib.ticker import ScalarFormatter, AutoMinorLocator
-import matplotlib.font_manager as fm
-font_names = [f.name for f in fm.fontManager.ttflist]
-# # Hydrogen bond analysis
-import warnings
-import logging
-from MDAnalysis import MissingDataWarning, NoDataError, SelectionError, SelectionWarning
-from MDAnalysis.lib.log import ProgressBar
 from MDAnalysis.lib.NeighborSearch import AtomNeighborSearch
 from MDAnalysis.lib import distances
-from MDAnalysis.lib.correlations import autocorrelation, correct_intermittency
-logger = logging.getLogger('MDAnalysis.analysis.hbonds')
+
+#from matplotlib import rc
+#import matplotlib.ticker as ticker
+#from matplotlib.ticker import ScalarFormatter, AutoMinorLocator
+#import matplotlib.font_manager as fm
+#font_names = [f.name for f in fm.fontManager.ttflist]
+# # Hydrogen bond analysis
+#import logging
+#from MDAnalysis import MissingDataWarning, NoDataError, SelectionError, SelectionWarning
+#from MDAnalysis.lib.log import ProgressBar
+
+#from MDAnalysis.lib.correlations import autocorrelation, correct_intermittency
+#logger = logging.getLogger('MDAnalysis.analysis.hbonds')
 
 class ACF:
     def __init__(self, universe, box, HBs_criteria, selection1, selection2, path_results, print_results_path, cutoff_dist_O_H, cutoff_dist_donor_acceptor, cutoff_IF, cutoff_BULK, angle, pbc=True, start=None, stop=None, step=None, nac='IF', **kwargs):   # 
@@ -63,9 +63,9 @@ class ACF:
         self.start = start
         self.stop = stop
         self.step= step
-        self.search_val = re.compile('11.6355*')
+        #self.search_val = re.compile('11.6355*')
         # final result accessed as self.timeseries
-        self._timeseries = None  
+        #self._timeseries = None  
         # time for each frame
         self.timesteps = None
         # The hydrogen bonds O-H-O list for pandas
@@ -136,7 +136,7 @@ class ACF:
 #    def run(self, **kwargs):
     def _single_run(self, start, stop, step):
         
-        self._timeseries = []
+        #self._timeseries = []
         self.timesteps = []
         self._s1 = self.u.select_atoms(self.selection1)
         s1_ids=self._s1.ids
@@ -180,7 +180,7 @@ class ACF:
         # use linspace instead of histogram
         #print("h3oDensity Hist edge len", len(h3oDensity_hist_edges))
 
-        logger.info("HBond analysis: starting")
+        #logger.info("HBond analysis: starting")
 
         n_frames_i = 0
         stepsize=0.5
@@ -618,8 +618,8 @@ class ACF:
     def _slice_trj_fixed_window10000(self):
         #window = 10000
         #sampling_numbers = 1000
-        sampling_numbers = 10000
-        #sampling_numbers = 3
+        #sampling_numbers = 10000
+        sampling_numbers = 3
 
         #nruns = int((self.stop - self.start) / sampling_numbers / self.step) # old not good
 
