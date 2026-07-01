@@ -46,30 +46,16 @@ class ACF:
         self.step= step
         # time for each frame
         self.timesteps = None
-        # The hydrogen bonds O-H-O list for pandas
-        self.table = None
-        self.timeseries_table = None
         
         print("path_results: ", path_results)
         self.path_results = path_results
 
-        self.total_count_array_BULK_global = None
-        self.count_array_IF_global_aver = None
-        self.count_array_BULK_global_aver = None
-
-        # N_donor/accepter
-        self.count_array_IF_global_Ndonor_aver = None
-        self.count_array_IF_global_Nacceptor_aver = None
-        self.count_array_BULK_global_DAnumber_aver = None
-        
-        
         ### HBs ACF
         self.hb_acf_results = None
 
         self.print_results_path = print_results_path
         if not os.path.exists(self.print_results_path):
             os.makedirs(self.print_results_path)
-
 
     def _get_bonded_hydrogens_dist(self, atom):
         """Find bonded hydrogens within cutoff to 'atom'.
@@ -111,19 +97,10 @@ class ACF:
             if tmp:
                 self._s2_donors_h[i] = tmp   # fill the dict[i]
 
-#    def run(self, **kwargs):
     def _single_run(self, start, stop, step):
-        
-        #self._timeseries = []
         self.timesteps = []
         self._s1 = self.u.select_atoms(self.selection1)
-        s1_ids=self._s1.ids
-        s1_tot_res = len(self._s1.ids)
-        #print("Nr. of donors: ", s1_tot_res); input('enter')
-        self.s1_tot_res = s1_tot_res
-        
         self.dict_Oatom_index_to_i = {}
-
         "----------HB ACF----------"
         already_found_first_frame_IF = {}                    # disc for the HB ACF
         prev_already_found_IF = {}                           # disc for the HB ACF
@@ -136,10 +113,7 @@ class ACF:
         nr_HBs_IF_t = np.zeros_like(np.arange(start, stop, step), dtype=np.float32)
         nr_HBs_BULK_t = np.zeros_like(np.arange(start, stop, step), dtype=np.float32)
         nr_HBs_NE_t = np.zeros_like(np.arange(start, stop, step), dtype=np.float32)
-        tot_hb = s1_tot_res * 2
-        print('tot_hb', tot_hb)#;input('eter')
         "---------------------------"
-        print('start acf: ', hb_acf_results_IF); #input('enter')
 
         self.dim_ndx = 0
         L = self.box[0]
@@ -157,53 +131,7 @@ class ACF:
             hb_acf_already_found_IF = {}
             hb_acf_already_found_BULK = {}
             "--------------------------"
-            dict_d_a = {}
-            dict_a_d = {}
        
-            # Net atomic charge  
-            count_array_IF_charge_H = np.zeros((3,3), dtype=np.float64)
-            count_array_IM_charge_H = np.zeros((3,3), dtype=np.float64)
-            count_array_BULK_charge_H = np.zeros((4,4), dtype=np.float64)
-            count_array_NE_charge_H = np.zeros((3,3), dtype=np.float64)
-
-            count_array_IF_charge_H_count = np.zeros((3,3), dtype=np.float64)
-            count_array_IM_charge_H_count = np.zeros((3,3), dtype=np.float64)
-            count_array_BULK_charge_H_count = np.zeros((4,4), dtype=np.float64)
-            count_array_NE_charge_H_count = np.zeros((3,3), dtype=np.float64)
-
-            count_array_IF_charge_O = np.zeros((3,3), dtype=np.float64)
-            count_array_IM_charge_O = np.zeros((3,3), dtype=np.float64)
-            count_array_BULK_charge_O = np.zeros((4,4), dtype=np.float64)
-            count_array_NE_charge_O = np.zeros((3,3), dtype=np.float64)
-
-            count_array_IF_charge_O_count = np.zeros((3,3), dtype=np.float64)
-            count_array_IM_charge_O_count = np.zeros((3,3), dtype=np.float64)
-            count_array_BULK_charge_O_count = np.zeros((4,4), dtype=np.float64)
-            count_array_NE_charge_O_count = np.zeros((3,3), dtype=np.float64)
-
-            #
-            count_array_IF = np.zeros((3,3), dtype=np.float64)
-            count_array_IF_Ndonor = np.zeros((3,3), dtype=np.float64)
-            count_array_IF_Nacceptor = np.zeros((3,3), dtype=np.float64)
-
-            self.count_array_IF_EXT = np.zeros((6,6), dtype=np.float64)       # Extended HB matrix
-            self.count_array_IF_EXT_global = np.zeros((6,6), dtype=np.float64)       # Extended HB matrix
-
-            count_array_IM = np.zeros((3,3), dtype=np.float64)
-            count_array_BULK = np.zeros((4,4), dtype=np.float64)
-            count_array_NE = np.zeros((3,3), dtype=np.float64)
-
-            self.oxygen_pos_angle_xaxis_HB_tuple_IF = {} 
-            self.hydrogen_pos_angle_au_chg_xaxis_HB_tuple_IF = {}
-            self.hydrogen_pos_angle_xaxis_HB_tuple_IF = {} 
-            self.oxygen_pos_netWaterchg = {}
-
-            self.hist_tuple_angle_charge_IF_O = []
-            self.hist_tuple_angle_charge_IF_H = []
-
-            self.HB_collect_d1ax = []
-            self.HB_collect_d2ax = []
-
             "Dictionary for oxygen atoms with H tagged"
             self.dict_oxygen_with_h_tagged = {}
 
@@ -320,13 +248,6 @@ class ACF:
 
                                         already_found[(d.index, h.index, a.index)] = True
                                                
-                                        # Make a new dict for analysis
-                                        # Add the dornor and acceptor pair into the dict.
-                                        # Add new value to the list of the key if a key does not exist, make a new key
-                                        dict_d_a.setdefault(d,[]).append(a)
-                                        dict_a_d.setdefault(a.index,[]).append(d)
-                                        #c += 1   
-
                                         # Find active H in the H3O+, update the histograme of the free energy of H3O+
                                         if len(value) == 3: 
                                             dist_1 = distances.calc_bonds(h.position, d.position, box=self.box)
@@ -365,8 +286,6 @@ class ACF:
                                         # Make a new dict for analysis
                                         # Add the dornor and acceptor pair into the dict.
                                         # Add new value to the list of the key if a key does not exist, make a new key
-                                        dict_d_a.setdefault(d,[]).append(a)
-                                        dict_a_d.setdefault(a.index,[]).append(d)
 
                                         # Find active H in the H3O+, update the histograme of the free energy of H3O+
                                         if len(value) == 3: 
@@ -456,16 +375,12 @@ class ACF:
 
     def _slice_trj_fixed_window10000(self):
         #window = 10000
-        #sampling_numbers = 1000
         #sampling_numbers = 10000
         sampling_numbers = 3
-
-        #nruns = int((self.stop - self.start) / sampling_numbers / self.step) # old not good
 
         tmp = int((self.stop - self.start) / self.step)
         nruns = np.ceil(tmp / sampling_numbers)
         print('nruns: ', nruns)#; input('enter')
-        #nruns = tmp / window
 
         #if tmp < window:
             #raise ValueError('The total frame is less than the minimum window %s\n EXIT' %(min_window))
