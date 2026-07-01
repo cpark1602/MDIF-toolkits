@@ -1,14 +1,14 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
-name = "mdif-toolkits"   # The unique name users will type into 'pip install'
+name = "MDIF-toolkits"   # The unique name users will type into 'pip install'
 version = "0.1.0"
 authors = [
-    { name="Your Name", email="your.email@example.com" }
+    { name="Chanbum Park", email="chanbum.park@ruhr-uni-bochum.de" }
 ]
-description = "Molecular Dynamics Interfacial Framework toolkits for atomistic analysis."
+description = "Molecular Dynamics Framework toolkits for atomistic analysis."
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
@@ -30,4 +30,8 @@ dependencies = [
 "Bug Tracker" = "https://github.com/cpark1602/MDIF-toolkits/issues"
 
 [project.scripts]
-mdif-run = "mdif_toolkits.main:main" # Optional terminal execution shortcut
+mdif-run = "MDIF-toolkits.main:main" # Optional terminal execution shortcut
+
+# Add these two lines at the very bottom of the file:
+[tool.hatch.metadata]
+allow-direct-references = true
