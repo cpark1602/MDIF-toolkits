@@ -44,9 +44,6 @@ class ACF:
         self.start = start
         self.stop = stop
         self.step= step
-        #self.search_val = re.compile('11.6355*')
-        # final result accessed as self.timeseries
-        #self._timeseries = None  
         # time for each frame
         self.timesteps = None
         # The hydrogen bonds O-H-O list for pandas
@@ -125,11 +122,6 @@ class ACF:
         #print("Nr. of donors: ", s1_tot_res); input('enter')
         self.s1_tot_res = s1_tot_res
         
-        count_array_IF_global = np.zeros((3,3), dtype=np.float64)
-        count_array_IM_global = np.zeros((3,3), dtype=np.float64)
-        count_array_BULK_global = np.zeros((4,4), dtype=np.float64)
-        count_array_NE_global = np.zeros((3,3), dtype=np.float64)
-
         self.dict_Oatom_index_to_i = {}
 
         "----------HB ACF----------"
@@ -231,12 +223,9 @@ class ACF:
 
             for i_s1 in range(len(self._s1)):
                 self.dict_Oatom_index_to_i[self._s1[i_s1].index] = i_s1 
-                #print("i: %s, index: %s" %(i_s1, self._s1[i_s1].index))
 
             for i_s1 in range(len(self._s1)):
                 ndx_s1 = self._s1[i_s1].index
-                #i_s1 = self.index_to_i_dict(ndx_s1)
-                #print("i: %s, index: %s," %(i_s1, self.dict_Oatom_index_to_i[ndx_s1]))
             
             # Update the HB list
             #if self.update_selection1:
@@ -288,56 +277,29 @@ class ACF:
                     self.dict_oxygen_with_h_tagged[closest_o_near_h_tagged_index].append(h_tag)
                 else:
                     self.dict_oxygen_with_h_tagged[closest_o_near_h_tagged_index] = [h_tag]
+
             ###=== Tagging H finished===###
-
-            #count_o_h_tagged = 0
-            #for o_tag in self._s1:
-            #    print('count %s, o agindex %s' %( count_o_h_tagged, o_tag.index))
-            #    count_o_h_tagged += 1
-
             ###--- loop over the oxygen dictionary with tagged H---###
             ###--- Oxygen atoms belong to ClO4 are not selected; because those are not the closest oxygens---###
+
             count_h3o = 0
             h3o_dist_list = []; h3o_dist_da_dict = {}
             for key, value in self.dict_oxygen_with_h_tagged.items():
-                ###key: donor index, values: the closest hydrogen atoms 
-                #print("loop over the oxygen index: ", key)
-                #d = self._s1[self.index_to_i(key)]   # index_to_i is wrong; becaue oh- is made by removeing two h from h3o-> The sequence is wrong.
                 d = self._s1[self.dict_Oatom_index_to_i[key]]   # use a new dictionary which is sorted according to the self._s1 list.
-
-                #donor_pos_xyz = self._s1[self.index_to_i(key)].position
-                #donor_index = self._s1[self.index_to_i(key)].index
                 donor_pos_xyz = d.position
                 donor_index = d.index
                 
                 # loop over tagged H, which belongs to the O_i
                 for h in value:               
-                    ### Hydrogen density profile.
-                    #HydrogenDensity_hist_ndx = np.digitize(h.position[self.dim_ndx], bins=h3oDensity_hist_edges)
-                    #HydrogenDensity_hist[HydrogenDensity_hist_ndx] += 1
-
                     res = self.ns_acceptors.search(h, self.cutoff_dist_O_H)
                     # d-h -- a ; Search a around h within cutoff_dist_O_H 
-
                     for a in res:
-                        #print(donor_index, a.index) 
-
                         if d.index == a.index:
-                            #print("duplicated pairs donor %s acceptor %s" %(d.index, a.index))
-                            #print("skip...\n")
-                            #continue
                             pass
                         else: 
-                            #print("Main loop: indexes of the d-h-a: %s-%s-%s " %(d.index, h.index, a.index))
-
-#                            if (d.index, h.index, a.index) in already_found or (a.index, h.index, d.index) in already_found:
                             if (d.index, h.index, a.index) in already_found:
-                                #if d.index == 167: 
-                                # 	print("O-H-O %s-%s-%s already found, skip. ***" %(a.index, h.index, d.index))
-                                #continue
                                 pass
                             else:
-                                #print("--- in loop ---")
                                 angle_rad = distances.calc_angles(h.position, 
                                                               d.position,
                                                               a.position, box=self.box)
@@ -354,7 +316,6 @@ class ACF:
 
                                 "Rectangular HBs cutoffs"
                                 if self.HBs_criteria == 'Luzar':
-                                    #print("Luzar")
                                     if angle <= self.angle and dist <= self.cutoff_dist_donor_acceptor:
 
                                         already_found[(d.index, h.index, a.index)] = True
@@ -371,18 +332,15 @@ class ACF:
                                             dist_1 = distances.calc_bonds(h.position, d.position, box=self.box)
                                             dist_2 = distances.calc_bonds(h.position, a.position, box=self.box)
                                             dist_delta_d_a = abs(dist_1 - dist_2)
-                                        #    #print(' d(%s)-h(%s)-a(%s): dist delta: %.4f' %(d.index, h.index, a.index, dist_delta_d_a))
                                             h3o_dist_list.append(dist_delta_d_a) 
                                             h3o_dist_da_dict[a.index] = dist_delta_d_a 
                                             h3o_activeHbond_donor = d.index
-                                        #    #print('  Add all keys and values in continous list, len(%s)\n %s' %( len(dict_d_a_delta_continuous), dict_d_a_delta_continuous) )
 
                                         "#####***** HBs ACF (IF) *****#####"
                                         if self.cutoff_IF[0] < d.position[0] <= self.cutoff_IF[1]:
                                             if frame == start:
                                                 prev_already_found_IF[(d.index, h.index, a.index)] = True
                                             else:
-                                                #print("----- NOT first frame-----")
                                                 # search the same d-h-a, which survive from the previous 
                                                 if (d.index, h.index, a.index) in prev_already_found_IF:
                                                     hb_acf_already_found_IF[(d.index, h.index, a.index)] = True
@@ -400,11 +358,8 @@ class ACF:
 
                                 #"Triangular HBs cutoffs"    
                                 elif self.HBs_criteria == 'Sho':
-                                    #print("Sho")
                                     cosine_term = -1.71 * np.cos(angle_OHO_rad) + 1.37
-                                    #print("dist O_H: ", dist_O2_H, "cosine_term: ", cosine_term)
                                     if dist_O2_H < cosine_term:
-                                        #frame_results.append( [d.index, h.index, a.index, (d.name, h.name, a.name), h.position[0], dist, angle])
                                         already_found[(d.index, h.index, a.index)] = True
                                     
                                         # Make a new dict for analysis
@@ -526,7 +481,6 @@ class ACF:
         return window_list
 
     def run(self, **kwargs):
-        #self._single_run(self.start, self.stop, self.step) 
         step=1; 
         #window_list = self._slice_trj(nruns)    # [start, ..., intermediates..., end]
         window_list = self._slice_trj_fixed_window10000()
