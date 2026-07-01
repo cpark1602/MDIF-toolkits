@@ -359,17 +359,6 @@ class ACF:
 
         return hb_acf_results_IF, hb_acf_results_BULK, c_dot_if, c_dot_if_2
 
-
-#    def _slice_trj(self, nruns):
-#        print('n runs: ', nruns, 'window: ', window)
-#        window_list = []; windows = 0
-#        for i in range(nruns+1):
-#           window_list.append(windows)
-#           windows += window
-#        print('window_list: ', window_list)
-#        return window_list 
-
-    #def _slice_trj_fixed_window10000(self):
     def _slice_trj(self):
         #window = 10000
         #sampling_numbers = 10000
@@ -377,7 +366,6 @@ class ACF:
 
         tmp = int((self.stop - self.start) / self.step)
         nruns = np.ceil(tmp / sampling_numbers)
-        print('nruns: ', nruns)#; input('enter')
             
         window_list = []; windows = 0
         for i in range(int(nruns+1)):
@@ -387,10 +375,9 @@ class ACF:
 
     def run(self, **kwargs):
         step=1; 
-        window_list = self._slice_trj(nruns)    # [start, ..., intermediates..., end]
-        #window_list = self._slice_trj_fixed_window10000()
-        #window_list = [0, 4000, 8000, 12000]       # [start,stop-start,stop]
-        nruns=len(window_list);print('nruns: ', nruns-1)#; input('enter')
+        #window_list = self._slice_trj(nruns)    # [start, ..., intermediates..., end]
+        window_list = self._slice_trj()    
+        nruns=len(window_list);
 
         # Prepare
         hb_acf_results_IF_global = np.zeros_like(np.arange(window_list[0], window_list[1], self.step), dtype=np.float32)
@@ -405,8 +392,6 @@ class ACF:
         # Average HB number at each starting point; Average of HB.
         hb_acf_results_IF_global = 0
         hb_acf_results_BULK_global = 0
-
-        #hb_acf_results_IF_global = 0; hb_acf_results_BULK_global = 0; c_dot_if_global = 0
         for i in range(nruns-1):
             print('nth window: ', i)
             hb_acf_results_IF, hb_acf_results_BULK, c_dot_if, c_dot_if_2 = self._single_run(window_list[i], window_list[i+1], self.step) 
@@ -415,7 +400,6 @@ class ACF:
 
             # ACF <h(0)h(t)>
             acf_if = hb_acf_results_IF[0] * hb_acf_results_IF
-            #print('acf_if', acf_if, len(acf_if), np.shape(hb_acf_results_IF_acf_global));input('enter')
             hb_acf_results_IF_acf_global += acf_if
             # To compute average h
             hb_acf_results_IF_global +=  hb_acf_results_IF[0]
