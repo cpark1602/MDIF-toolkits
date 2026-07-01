@@ -11,7 +11,7 @@ from MDAnalysis.lib.NeighborSearch import AtomNeighborSearch
 from MDAnalysis.lib import distances
 
 class ACF:
-    def __init__(self, universe, box, HBs_criteria, selection1, selection2, path_results, print_results_path, cutoff_dist_O_H, cutoff_dist_donor_acceptor, cutoff_IF, cutoff_BULK, angle, pbc=True, start=None, stop=None, step=None, nac='IF', **kwargs):   # 
+    def __init__(self, universe, box, HBs_criteria, selection1, selection2, print_results_path, cutoff_dist_O_H, cutoff_dist_donor_acceptor, cutoff_IF, cutoff_BULK, angle, pbc, start=None, stop=None, step=None, nac='IF'):   #  , **kwargs
         
         self.u = universe
         self.seconds1 = time.time()
@@ -39,6 +39,7 @@ class ACF:
         
         # Cutoff angle O-H-O
         self.angle = angle
+        
         self.pbc = pbc and all(self.u.dimensions[:3])
         # Start frame nr. and stop frame nr.
         self.start = start
@@ -47,9 +48,6 @@ class ACF:
         # time for each frame
         self.timesteps = None
         
-        print("path_results: ", path_results)
-        self.path_results = path_results
-
         ### HBs ACF
         self.hb_acf_results = None
 
