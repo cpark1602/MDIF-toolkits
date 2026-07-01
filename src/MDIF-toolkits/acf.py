@@ -1,33 +1,14 @@
 #!/usr/bin/env python
 
-#import MDAnalysis as mda
 import numpy as np
-#import matplotlib.pyplot as pl
-#import scipy.constants
-#import scipy.stats 
 import os
-#import shutil    # copy file
 import time
-#import re
 
 import warnings
 warnings.filterwarnings(action='once')
 
 from MDAnalysis.lib.NeighborSearch import AtomNeighborSearch
 from MDAnalysis.lib import distances
-
-#from matplotlib import rc
-#import matplotlib.ticker as ticker
-#from matplotlib.ticker import ScalarFormatter, AutoMinorLocator
-#import matplotlib.font_manager as fm
-#font_names = [f.name for f in fm.fontManager.ttflist]
-# # Hydrogen bond analysis
-#import logging
-#from MDAnalysis import MissingDataWarning, NoDataError, SelectionError, SelectionWarning
-#from MDAnalysis.lib.log import ProgressBar
-
-#from MDAnalysis.lib.correlations import autocorrelation, correct_intermittency
-#logger = logging.getLogger('MDAnalysis.analysis.hbonds')
 
 class ACF:
     def __init__(self, universe, box, HBs_criteria, selection1, selection2, path_results, print_results_path, cutoff_dist_O_H, cutoff_dist_donor_acceptor, cutoff_IF, cutoff_BULK, angle, pbc=True, start=None, stop=None, step=None, nac='IF', **kwargs):   # 
@@ -152,10 +133,6 @@ class ACF:
         self.dict_Oatom_index_to_i = {}
 
         "----------HB ACF----------"
-        #already_found_first_frame = {}                    # disc for the HB ACF
-        #prev_already_found = {}                           # disc for the HB ACF
-        #self.hb_acf_results = np.zeros_like(np.arange(self.start, self.stop, self.step), dtype=np.float32)
-        
         already_found_first_frame_IF = {}                    # disc for the HB ACF
         prev_already_found_IF = {}                           # disc for the HB ACF
         
@@ -174,25 +151,12 @@ class ACF:
 
         self.dim_ndx = 0
         L = self.box[0]
-        #print("n_bins: ", self.n_bins)
-        #frames = 0
-        # Initiate the histogram
-        # use linspace instead of histogram
-        #print("h3oDensity Hist edge len", len(h3oDensity_hist_edges))
-
-        #logger.info("HBond analysis: starting")
-
         n_frames_i = 0
         stepsize=0.5
         for ts in self.u.trajectory[start:stop:step]:
-        #for ts in ProgressBar(self.u.trajectory[self.start:self.stop:self.step],
-        #                      desc="HBond analysis",
-        #                      verbose=kwargs.get('verbose', False)):
-            # all bonds for this timestep
+
             frame_results = []
-            # dict of tuples (atom.index, atom.index) for quick check if
-            # we already have the bond (to avoid duplicates)
-            #print("Frame: {0:5d}, Time: {1:8.3f} ps".format(ts.frame, self.u.trajectory.time))
+
             print("Frame: {0:5d}".format(ts.frame))
 
             already_found = {}
@@ -253,22 +217,10 @@ class ACF:
 
             frame = ts.frame
             print("-----------------------------")
-            #print('time steps: ', self.timesteps)
-            #print("frame: %s"%frame)
-            #if frame == self.start:
-            #    print("")
-            #    print("************************")
-            #    print("ts.frame == frame: %s %s" %(frame, self.start))
-            #    print("")
-
-            #print("")
-            #print("--------------------------------")           
-            #print("Frame: {0:5d}, Time: {1:8.3f} ps".format(ts.frame, self.u.trajectory.time)); input('enter')
 
             n_frames_i += 1
             time_fs = ts.frame * stepsize   # * self.step; ts.frame already include the step 
             
-            #self.timesteps.append(self.u.trajectory.time)
             self.timesteps.append(time_fs)
 
             #n_frableames += 1
@@ -321,34 +273,21 @@ class ACF:
            
             """ search oxygens, which are closest hydrogen atoms  """
             self.Hatoms = self.u.select_atoms('name H')
-            #print('Hatoms: ', len(self.Hatoms))
             for h_tag in self.Hatoms:
-                #h_tag = self.Hatoms[0]
-                #print('h_tag index: ', h_tag.index, h_tag.position); input('enter')
                 oxygens_for_Htagging = self.ns_acceptors.search(h_tag, 5.0)   # self.box[0]*2 self.box[0], search oxygens within the simulation box
-                #print(oxygens_for_Htagging[0].index)
                 dict_dist_o_h_tagged = {} 
                 ### Search oxygen near the reference hydrogen within the cutoff
                 for o_near_h in oxygens_for_Htagging:
                     dist_o_h_tagged = distances.calc_bonds(h_tag.position, o_near_h.position, box=self.box)
-                    #print("index O near h_i: %s, h_index: %s, dist: %s" %( o_near_h.index, h_tag.index, dist_o_h_tagged) )
                     dict_dist_o_h_tagged[o_near_h.index] = dist_o_h_tagged
                 ### sort the dictionary to find the closest oxygen
                 dict_dist_o_h_tagged_sorted = {k: v for k, v in sorted(dict_dist_o_h_tagged.items(), key=lambda item: item[1])}
-                #print(dict_dist_o_h_tagged_sorted)
                 closest_o_near_h_tagged_index =  list(dict_dist_o_h_tagged_sorted.keys())[0]
 
                 if closest_o_near_h_tagged_index in self.dict_oxygen_with_h_tagged:
-                    #print('key exist')
                     self.dict_oxygen_with_h_tagged[closest_o_near_h_tagged_index].append(h_tag)
-                    #print('added')
-                    #print(self.dict_oxygen_with_h_tagged)
                 else:
-                    #print('key does not exist')
-                    #print(self.dict_oxygen_with_h_tagged)
                     self.dict_oxygen_with_h_tagged[closest_o_near_h_tagged_index] = [h_tag]
-                    #print('added')
-                    #print(self.dict_oxygen_with_h_tagged)
             ###=== Tagging H finished===###
 
             #count_o_h_tagged = 0
@@ -417,11 +356,7 @@ class ACF:
                                 if self.HBs_criteria == 'Luzar':
                                     #print("Luzar")
                                     if angle <= self.angle and dist <= self.cutoff_dist_donor_acceptor:
-                                        #print("****************** hydrogen position: %s\n  Donor position: %s\n, acceptor position: %s" %(h.position, d.position, a.position))
-                                    
-                                        #print("****************** HB Found: %s-%s-%s; dist:%s angle: %s" %(d.index, h.index, a.index, dist, angle))
-                                        #print("****************** location: ", h.position[0],d.position[0], a.position[0])
-                                        #frame_results.append( [d.index, h.index, a.index, (d.name, h.name, a.name), h.position[0], dist, angle])
+
                                         already_found[(d.index, h.index, a.index)] = True
                                                
                                         # Make a new dict for analysis
@@ -469,8 +404,6 @@ class ACF:
                                     cosine_term = -1.71 * np.cos(angle_OHO_rad) + 1.37
                                     #print("dist O_H: ", dist_O2_H, "cosine_term: ", cosine_term)
                                     if dist_O2_H < cosine_term:
-                                        #print("****************** HB (Sho) Found: dist h-o(a) %s cos %s" %(dist_O2_H, cosine_term))
-                                        #print("****************** location: ", h.position[0],d.position[0], a.position[0])
                                         #frame_results.append( [d.index, h.index, a.index, (d.name, h.name, a.name), h.position[0], dist, angle])
                                         already_found[(d.index, h.index, a.index)] = True
                                     
@@ -485,11 +418,9 @@ class ACF:
                                             dist_1 = distances.calc_bonds(h.position, d.position, box=self.box)
                                             dist_2 = distances.calc_bonds(h.position, a.position, box=self.box)
                                             dist_delta_d_a = abs(dist_1 - dist_2)
-                                            #print(' d(%s)-h(%s)-a(%s): dist delta: %.4f' %(d.index, h.index, a.index, dist_delta_d_a))
                                             h3o_dist_list.append(dist_delta_d_a) 
                                             h3o_dist_da_dict[a.index] = dist_delta_d_a 
                                             h3o_activeHbond_donor = d.index
-                                        #    #print('  Add all keys and values in continous list, len(%s)\n %s' %( len(dict_d_a_delta_continuous), dict_d_a_delta_continuous) )
 
                                         "#####***** HBs ACF (IF) *****#####"
                                         if self.cutoff_IF[0] < d.position[0] <= self.cutoff_IF[1]:
@@ -518,15 +449,8 @@ class ACF:
                 already_found_first_frame_IF = prev_already_found_IF
                 len_hb_acf_firstFrame_IF = len(already_found_first_frame_IF)
                 hb_acf_results_IF[n_frames_i-1] = len_hb_acf_firstFrame_IF 
-                #prev_already_found_IF = already_found_IF
-                #print("first frame", prev_already_found_IF, len_hb_acf_firstFrame_IF)
             else:
-                #if prev_already_found_IF != hb_acf_already_found_IF:
-                    #print("not first frame ", prev_already_found_IF, len(prev_already_found_IF) )
-                    #print("        current ", hb_acf_already_found_IF, len(hb_acf_already_found_IF) )
-                    #input('enter')
                 prev_already_found_IF = hb_acf_already_found_IF 
-            
                 
             "###********** HB ACF (BULK) ***********###"
             if frame == start:
@@ -537,44 +461,12 @@ class ACF:
             else:
                 prev_already_found_BULK = hb_acf_already_found_BULK
                 
-            ##"###********** HB ACF ***********###"
-            ##if frame == start:
-            ##    already_found_first_frame = already_found
-            ##    len_hb_acf_firstFrame = len(already_found_first_frame)
-            ##    self.hb_acf_results[n_frames_i-1] = len_hb_acf_firstFrame 
-            ##    prev_already_found = already_found
-            ##else:
-            ##    prev_already_found = hb_acf_already_found
-            #
-            #print(already_found_first_frame_IF)
-            ##else:
-            ##    self.hb_acf_results[n_frames_i] = self.hb_acf_results[n_frames_i] / len_hb_acf_firstFrame
-            ##print("----------------")   # (ff)
-            ##print("len HB_ACF: {}".format(len(hb_acf_already_found)))
-            ##print("HB ACF results: %s" %(self.hb_acf_results))
-            ##print("----------------")
-            #
-            #t2=time.time()
-            #dt=t2-t1
-            #self.t_l.append(dt)
-
         print("=== End of ts loop ===") 
 
         def compute_stderror(s, sq, c):
             #s: sum; c: count
             return np.sqrt((sq/c) - (s*s)/(c*c) ) / (np.sqrt(c))
 
-
-        #print(n_frames_i, stepsize, self.step)
-
-        #print('time fs: ', time_fs)
-            
-        #"---------- HB ACF ----------"
-        # Normalzed by the first frame 
-        #hb_acf_results_IF /= len_hb_acf_firstFrame_IF
-        #hb_acf_results_BULK /= len_hb_acf_firstFrame_BULK
-        # Not normalze by the first frame 
-        #print(hb_acf_results_IF, hb_acf_results_BULK)
 
         # Normalized by the total number of HB in each region.
         hb_acf_results_IF /= nr_HBs_IF_t   # h at if
@@ -591,22 +483,14 @@ class ACF:
         c_dot_bulk = - (( h_t_bulk - h_0_bulk ) / c_t ) * ( 1 - h_t_bulk )
         c_dot_bulk_2 = - (( h_t_bulk[1] - h_0_bulk ) / (c_t[1] - c_t[0]) ) * ( 1 - h_t_bulk )
 
-        #print(h_t_if);input('enter')
-        #print('\nh_0_if', h_0_if);
-        #print('\nh_t_if', h_t_if);
-        #print('\nc_dot_if', c_dot_if, c_dot_if_2); input('enter')
-         
         self.seconds2 = time.time()
         run_time = self.seconds2 - self.seconds1
         runt_time = run_time/60
-        #print("total run time: ", run_time, "Minutes")
 
         return hb_acf_results_IF, hb_acf_results_BULK, c_dot_if, c_dot_if_2
 
 
     def _slice_trj(self, nruns):
-        #window = int(self.total_frame / nruns)
-        #window = int(self.stop - self.start / nruns)
         print('n runs: ', nruns, 'window: ', window)
         window_list = []; windows = 0
         for i in range(nruns+1):
@@ -710,35 +594,3 @@ class ACF:
         np.save(self.print_results_path+'/c_dot_if_global.npy', c_dot_if_global)
         np.save(self.print_results_path+'/c_dot_if_2_global.npy', c_dot_if_2_global)
 
-
-######----- Trj path -----
-#w_path="./"
-##from sys import argv
-## Use only xyz format.
-##trj_file1=argv[1]
-#trj_file1=test-pos-pos-frc.xyz
-#u_if_q0_nac = mda.Universe(trj_file1)
-#
-#
-#print("total nr. of frame: ", len(u_if_q0_nac.trajectory))
-#tot_frames = len(u_if_q0_nac.trajectory)
-#boxX = 48.57; boxY = 15.667; boxZ = 15.076
-##boxX = 23.0000; boxY = 23.0000; boxZ = 22.3404
-#box = [boxX, boxY, boxZ, 90, 90, 90]
-#"Velesco angle H-O-O 35 degrees"
-#HBs_criteria_input = 'Sho'   # Luzar: a rectangule; Sho: Triangle
-##start_stop_step = [0, tot_frames, 1]  # q0.0-region2-new/ddec
-#start_stop_step = [0, 10000, 1]  # q0.0-region2-new/ddec
-##start_stop_step = [0, 3, 1]  # q0.0-region2-new/ddec
-#
-#chemisorbed_cutoff_O = 10.5
-#chemisorbed_cutoff_H = 9.85
-#path_results='./results/atomic_charge/'   # where the NAC results are stored
-#print_results_path=w_path+'/results-acf-cdot-xyz/'     # To save the results
-#if_q0_nac = HBanalysis(u_if_q0_nac, box, HBs_criteria_input, 'name O', 'name O', path_results, print_results_path, cutoff_dist_O_H =3.5, cutoff_dist_donor_acceptor = 3.5, 
-#            cutoff_IF = [0, 12], cutoff_BULK = [19, 28], angle=35.0, start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2], nac='IF')  #tot_frames
-#if_q0_nac.run()
-#
-#print('Use xyz format')
-#print('Ne cutoff for the HB ACF analysis is 31 AA')
-#
