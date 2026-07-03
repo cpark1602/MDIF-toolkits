@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import MDAnalysis as mda
 import numpy as np
-import matplotlib.pyplot as pl
-import scipy.constants
-import scipy.stats 
-import os
 import time
-import re
 
 #----------------------------------
 # Path
@@ -87,7 +81,6 @@ class Conductivity:
         self._timeseries = []
         self.timesteps = []
         self._s1 = self.u.select_atoms(self.selection1)
-        s1_ids=self._s1.ids
         s1_tot_res = len(self._s1.ids)
         self.s1_tot_res = s1_tot_res
 
@@ -134,7 +127,7 @@ class Conductivity:
         #z_ion2 = -2.0
         z_ion1 = +1.0  #float(argv[7])
         z_ion2 = -1.0  #float(argv[8])
-        print("z1: %s z2: %s" %(z_ion1, z_ion2)); #input('enter')
+        print("z1: %s z2: %s" %(z_ion1, z_ion2)) 
         ##################
 
         
