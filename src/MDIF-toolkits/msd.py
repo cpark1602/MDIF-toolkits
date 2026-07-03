@@ -1,23 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import MDAnalysis as mda
 import numpy as np
-import matplotlib.pyplot as pl
-import scipy.constants
-import scipy.stats 
-import os
 
-import time
-import re
 
 import warnings
 warnings.filterwarnings(action='once')
 
 import logging
-from MDAnalysis import MissingDataWarning, NoDataError, SelectionError, SelectionWarning
-from MDAnalysis.lib.NeighborSearch import AtomNeighborSearch
-from MDAnalysis.lib import distances
 logger = logging.getLogger('MDAnalysis.analysis.hbonds')
 
 def find_nearest(array, value):
