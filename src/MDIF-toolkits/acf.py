@@ -537,8 +537,8 @@ class ACF:
         hb_acf_results_IF_global = hb_acf_results_IF_global / (nruns - 1)
         hb_acf_results_BULK_global = hb_acf_results_BULK_global / (nruns - 1)
 
-        #print("hb_acf_results_IF_acf_global ", hb_acf_results_IF_acf_global)
-        #print("hb_acf_results_BULK_acf_global", hb_acf_results_BULK_global)
+        # print("hb_acf_results_IF_acf_global ", hb_acf_results_IF_acf_global)
+        # print("hb_acf_results_BULK_acf_global", hb_acf_results_BULK_global)
 
         # Final ACF; <h(0)*h(t)> / <h>
         hb_C_IF = hb_acf_results_IF_acf_global / hb_acf_results_IF_global
@@ -547,7 +547,7 @@ class ACF:
         c_dot_if_global = (c_dot_if_global / (nruns - 1)) / hb_acf_results_IF_global
         c_dot_if_2_global = (c_dot_if_2_global / (nruns - 1)) / hb_acf_results_IF_global
 
-        #np.save(self.print_results_path + "/hb_acf_results_IF.npy", hb_C_IF)
-        #np.save(self.print_results_path + "/hb_acf_results_BULK.npy", hb_C_BULK)
-        #np.save(self.print_results_path + "/c_dot_if_global.npy", c_dot_if_global)
-        #np.save(self.print_results_path + "/c_dot_if_2_global.npy", c_dot_if_2_global)
+        # np.save(self.print_results_path + "/hb_acf_results_IF.npy", hb_C_IF)
+        # np.save(self.print_results_path + "/hb_acf_results_BULK.npy", hb_C_BULK)
+        # np.save(self.print_results_path + "/c_dot_if_global.npy", c_dot_if_global)
+        # np.save(self.print_results_path + "/c_dot_if_2_global.npy", c_dot_if_2_global)

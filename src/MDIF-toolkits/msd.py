@@ -5,41 +5,54 @@ import numpy as np
 
 
 import warnings
-warnings.filterwarnings(action='once')
+
+warnings.filterwarnings(action="once")
 
 import logging
-logger = logging.getLogger('MDAnalysis.analysis.hbonds')
+
+logger = logging.getLogger("MDAnalysis.analysis.hbonds")
+
 
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
-    #print('idx: ', idx, array[idx])
+    # print('idx: ', idx, array[idx])
     return idx
 
 
 def read_file_x_y(filename):
-        #open_file=argv[1]
-        x = []
-        y = []
-        dy = []
-        txt = open(filename)
-        while True:
-                line = txt.readline().strip('\n')
-                #print line
-                if len(line) == 0:
-                        break
-                else:
-                        line = line.split()
-                        x.append(float(line[0]))
-                        y.append(float(line[1]))
-                        #dy.append(float(line[2]))
-        txt.close()
-        return x, y     #, dy
+    # open_file=argv[1]
+    x = []
+    y = []
+    dy = []
+    txt = open(filename)
+    while True:
+        line = txt.readline().strip("\n")
+        # print line
+        if len(line) == 0:
+            break
+        else:
+            line = line.split()
+            x.append(float(line[0]))
+            y.append(float(line[1]))
+            # dy.append(float(line[2]))
+    txt.close()
+    return x, y  # , dy
 
 
 class MSD:
-    def __init__(self, universe, select='all', msd_type='xyz', fft=True,  start=None, stop=None, step=None, **kwargs): 
-        
+    def __init__(
+        self,
+        universe,
+        select="all",
+        msd_type="xyz",
+        fft=True,
+        start=None,
+        stop=None,
+        step=None,
+        **kwargs,
+    ):
+
         self.u = universe
         # args
         self.select = select
@@ -49,7 +62,7 @@ class MSD:
         # local
         self.ag = u.select_atoms(self.select)
         self.n_particles = len(self.ag)
-        print('n particle: ', self.n_particles)
+        print("n particle: ", self.n_particles)
         self._position_array = None
 
         # result
@@ -60,10 +73,16 @@ class MSD:
         self._setup_frames(self.u.trajectory, start=start, stop=stop, step=step)
 
     def _parse_msd_type(self):
-        """ Sets up the desired dimensionality of the MSD.
-        """
-        keys = {'x': [0], 'y': [1], 'z': [2], 'xy': [0, 1],
-                'xz': [0, 2], 'yz': [1, 2], 'xyz': [0, 1, 2]}
+        """Sets up the desired dimensionality of the MSD."""
+        keys = {
+            "x": [0],
+            "y": [1],
+            "z": [2],
+            "xy": [0, 1],
+            "xz": [0, 2],
+            "yz": [1, 2],
+            "xyz": [0, 1, 2],
+        }
 
         self.msd_type = self.msd_type.lower()
 
@@ -71,18 +90,17 @@ class MSD:
             self._dim = keys[self.msd_type]
         except KeyError:
             raise ValueError(
-                'invalid msd_type: {} specified, please specify one of xyz, '
-                'xy, xz, yz, x, y, z'.format(self.msd_type))
+                "invalid msd_type: {} specified, please specify one of xyz, "
+                "xy, xz, yz, x, y, z".format(self.msd_type)
+            )
 
         self.dim_fac = len(self._dim)
 
     def _prepare(self):
         # self.n_frames only available here
         # these need to be zeroed prior to each run() call
-        self.msds_by_particle = np.zeros((self.n_frames,
-                                                  self.n_particles))
-        self._position_array = np.zeros(
-            (self.n_frames, self.n_particles, self.dim_fac))
+        self.msds_by_particle = np.zeros((self.n_frames, self.n_particles))
+        self._position_array = np.zeros((self.n_frames, self.n_particles, self.dim_fac))
         # self.timeseries not set here
 
     def _setup_frames(self, trajectory, start=None, stop=None, step=None):
@@ -116,11 +134,16 @@ class MSD:
         self.times = np.zeros(self.n_frames)
 
     def _parse_msd_type(self):
-        r""" Sets up the desired dimensionality of the MSD.
-
-        """
-        keys = {'x': [0], 'y': [1], 'z': [2], 'xy': [0, 1],
-                'xz': [0, 2], 'yz': [1, 2], 'xyz': [0, 1, 2]}
+        r"""Sets up the desired dimensionality of the MSD."""
+        keys = {
+            "x": [0],
+            "y": [1],
+            "z": [2],
+            "xy": [0, 1],
+            "xz": [0, 2],
+            "yz": [1, 2],
+            "xyz": [0, 1, 2],
+        }
 
         self.msd_type = self.msd_type.lower()
 
@@ -128,19 +151,17 @@ class MSD:
             self._dim = keys[self.msd_type]
         except KeyError:
             raise ValueError(
-                'invalid msd_type: {} specified, please specify one of xyz, '
-                'xy, xz, yz, x, y, z'.format(self.msd_type))
+                "invalid msd_type: {} specified, please specify one of xyz, "
+                "xy, xz, yz, x, y, z".format(self.msd_type)
+            )
 
         self.dim_fac = len(self._dim)
 
     def _single_frame(self):
-        r""" Constructs array of positions for MSD calculation.
-
-        """
+        r"""Constructs array of positions for MSD calculation."""
         # shape of position array set here, use span in last dimension
         # from this point on
-        self._position_array[self._frame_index] = (
-            self.ag.positions[:, self._dim])
+        self._position_array[self._frame_index] = self.ag.positions[:, self._dim]
 
     def _conclude(self):
         if self.fft:
@@ -149,21 +170,19 @@ class MSD:
             self._conclude_simple()
 
     def _conclude_simple(self):
-        r""" Calculates the MSD via the simple "windowed" algorithm.
-
-        """
+        r"""Calculates the MSD via the simple "windowed" algorithm."""
         lagtimes = np.arange(1, self.n_frames)
         positions = self._position_array.astype(np.float64)
         for lag in lagtimes:
-            disp = positions[:-lag, :, :] - positions[lag:, :, :]        # positions[frames, atoms, xyz]
-            sqdist = np.square(disp).sum(axis=-1)                        # sum is for x^2 + y^2 + z^2
+            disp = (
+                positions[:-lag, :, :] - positions[lag:, :, :]
+            )  # positions[frames, atoms, xyz]
+            sqdist = np.square(disp).sum(axis=-1)  # sum is for x^2 + y^2 + z^2
             self.msds_by_particle[lag, :] = np.mean(sqdist, axis=0)
         self.timeseries = self.msds_by_particle.mean(axis=1)
 
     def _conclude_fft(self):  # with FFT, np.float64 bit prescision required.
-        r""" Calculates the MSD via the FCA fast correlation algorithm.
-
-        """
+        r"""Calculates the MSD via the FCA fast correlation algorithm."""
         try:
             import tidynamics
         except ImportError:
@@ -179,15 +198,14 @@ class MSD:
 
         positions = self._position_array.astype(np.float64)
         for n in range(self.n_particles):
-            self.msds_by_particle[:, n] = tidynamics.msd(
-                positions[:, n, :])
+            self.msds_by_particle[:, n] = tidynamics.msd(positions[:, n, :])
         self.timeseries = self.msds_by_particle.mean(axis=1)
 
     def run(self, **kwargs):
 
         self._prepare()
         i = 0
-        for ts in self.u.trajectory[self.start:self.stop:self.step]:
+        for ts in self.u.trajectory[self.start : self.stop : self.step]:
             self._frame_index = i
             self._ts = ts
             self.frames[i] = ts.frame
@@ -195,4 +213,3 @@ class MSD:
             i += 1
         self._conclude()
         return self
-
