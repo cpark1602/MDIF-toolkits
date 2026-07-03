@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Testing on the main modern Python versions
+        python-version: ['3.9', '3.10', '3.11']
+
+    steps:
+      # 1. Download your code onto the GitHub runner
+      - uses: actions/checkout@v4
+
+      # 2. Set up the specific Python runtime from the matrix
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # 3. Upgrade core pip tools and install your testing frameworks
+      - name: Install testing dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install flake8 pytest
+
+      # 4. Install your actual package along with its requirements
+      - name: Install MDIF-toolkits
+        run: |
+          pip install .
+
+      # 5. Syntax check: Catch formatting flaws or broken imports before they break runtime
+      - name: Lint with flake8
+        run: |
+          # Fails the build on critical Python syntax errors
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      # 6. Run your automated unit tests
+      - name: Test with pytest
+        run: |
+          pytest
