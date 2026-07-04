@@ -115,6 +115,27 @@ Calculates the translational diffusion coefficients of ionic species and solvent
 ### Radial Distribution Function (RDF) in Slab Geometry
 Computes a modified, spatially restricted g(r) function to evaluate pair correlation properties inside local thin-film slabs without bulk volume projection artifacts.
 
+```bash
+import rdf_slab
+IdentityA = "O"
+IdentityB = "O"
+
+ag1 = u_if.select_atoms(f'name {IdentityA}')
+ag2 = u_if.select_atoms(f'name {IdentityB}')
+
+# Initialize our slab analyzer (Slab bounds set from X=0 to X=4)
+slab_analyzer = rdf_slab.InterSlabRDF(u_if, box, cutoff_slab=[8, 12], binsize=0.1, exclusion_block=[1, 1])
+
+print("Starting trajectory analysis loop...")
+# Loop across frames without manually clearing internal arrays
+for ts in u_if.trajectory:
+    slab_analyzer._single_frame(ts, ag1, ag2)
+
+slab_analyzer.conclude()
+
+bins = slab_analyzer.bins
+rdf_data = slab_analyzer.rdf_slab_global
+```
 
 ---
 
