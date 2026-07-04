@@ -78,6 +78,29 @@ his_edges, number_density_Ne = if_q0_nac._get_densityProfile("Ne")
 ### Water Dipole Orientation Angles
 Analyzes the structural ordering and polarization of water molecules in proximity to electrified interfaces by measuring the distribution of dipole vector angles relative to the surface normal.
 
+#### Usage
+
+```bash
+u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
+boxX = 48.57
+boxY = 15.667
+boxZ = 15.076
+box = [boxX, boxY, boxZ, 90, 90, 90]
+u_if.dimensions = box
+start_stop_step = [0, -1, 1]
+print_results_path = "/results/"
+
+# ----- Load dipole angle analysis
+import dipole_angles
+pbc=True
+dim='x'
+bin_size = 0.02
+selection1 = 'name O'
+_u_if = dipole_angles.Dangling_bonds(u_if, box, print_results_path, pbc, bin_size, dim, selection1, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
+
+valdip_IF =  _u_if.run( start_stop_step[0], start_stop_step[1], start_stop_step[2] )
+```
+
 ### Hydrogen Bond Autocorrelation Function (ACF)
 Tracks the dynamic lifetime, breaking, and forming kinetics of hydrogen bond networks near a surface using structural time-correlation frameworks.
 
