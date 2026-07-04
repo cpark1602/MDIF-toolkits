@@ -143,7 +143,26 @@ Evaluates charge transport dynamics across the electrolyte layer by parsing coll
 Calculates the translational diffusion coefficients of ionic species and solvent clusters in bulk or confined slab environments.
 
 ### Radial Distribution Function (RDF) in Slab Geometry
-Computes a modified, spatially restricted g(r) function to evaluate pair correlation properties inside local thin-film slabs without bulk volume projection artifacts.
+When computing the Radial Distribution Function (RDF) near an interface, the system exhibits strong anisotropy along the surface normal (typically chosen as the $z$-axis or $x$-axis depending on your simulation setup). Because of this broken symmetry, the conventional isotropic 3D spherical RDF fails to properly capture the local structural changes.
+
+To account for this non-spherical symmetry, the RDF within a slab geometry is evaluated by constraining the reference and target particles inside an inhomogeneous lateral slice (an $xy$-slab) of a fixed total width, $2h$ (or $\Delta x$).
+
+The corresponding volume element $V(r)$ representing the intersection of a spherical shell of radius $r \rightarrow r + dr$ with the slab boundary is given by a cylindrical shell approximation:
+
+
+
+$$V(r) = 4\pi h r dr$$
+
+The local number density $\rho(r)$ within this localized shell volume is calculated as:
+
+$$\rho(r) = \frac{N(r)}{V(r)}$$
+
+Where $N(r)$ is the average number of particles found within the shell.
+
+Finally, the normalized RDF within the slab geometry, $g_{\text{slab}}(r)$, is computed by scaling the local shell density by the average bulk density of the target slab region ($\rho_{\text{slab}}$):
+
+$$g_{\text{slab}}(r) = \frac{\rho(r)}{\rho_{\text{slab}}}$$.
+
 
 ```bash
 import MDAnalysis as mda
@@ -234,6 +253,37 @@ kw_gk_mu_aver_global = if_q0_nac.run()
 ```
 
 ### Mean Squared Displacement
+This repository provides Python tools to compute the Mean Squared Displacement (MSD) of molecules from Molecular Dynamics (MD) trajectory data using both direct tracking and accelerated Fast Fourier Transform (FFT) methods.
+
+---
+
+#### Theoretical Framework
+
+Mean Squared Displacement (MSD) is a standard statistical measure in physics and chemistry that quantifies how far a particle (or molecule) moves from its starting position over a given time interval ($t$). It tracks the spatial exploration of an object over time and serves as a fundamental metric to compute the self-diffusion coefficient ($D$) of fluids.
+
+Mathematically, the MSD is defined as an ensemble average over all particles and time origins:
+
+$$\text{MSD}(t) = \langle |\mathbf{r}_i(t) - \mathbf{r}_i(0)|^2 \rangle$$
+
+Where $\mathbf{r}_i(t)$ represents the position vector of particle $i$ at time $t$, and the angled brackets $\langle \dots \rangle$ denote an average over all active particles and multiple time origins to maximize statistical sampling.
+
+#### Calculation of Diffusion Coefficients
+In the long-time limit (the linear diffusive regime), the diffusion coefficient $D$ can be extracted from the slope of the MSD curve via the **Einstein relation**:
+
+$$D = \lim_{t \to \infty} \frac{1}{2d \cdot t} \langle |\mathbf{r}_i(t) - \mathbf{r}_i(0)|^2 \rangle$$
+
+Where $d$ represents the dimensionality of the system (typically $d = 3$ for standard bulk 3D diffusion).
+
+---
+
+#### Repository Structure
+
+This repository features two distinct methods to compute the MSD curve from a trajectory:
+
+1. **`main_Analysis_msd.py`**: Utilizes the standard `MDAnalysis` framework to extract spatial coordinates and directly compute displacements frame-by-frame.
+2. **`msd_fft.py`**: Employs an accelerated **Fast Fourier Transform (FFT)** approach based on the Wiener-Khinchin theorem. This reduces the algorithmic complexity from a slow $O(N^2)$ direct window loop to an incredibly fast $O(N \log N)$ execution, ideal for long trajectories.
+
+
 
 #### Usage
 ```bash
