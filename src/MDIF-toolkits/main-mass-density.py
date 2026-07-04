@@ -2,7 +2,7 @@
 
 import MDAnalysis as mda
 import scipy.constants
-import scipy.stats
+#import scipy.stats
 
 import warnings
 

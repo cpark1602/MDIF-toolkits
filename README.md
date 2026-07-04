@@ -137,6 +137,52 @@ bins = slab_analyzer.bins
 rdf_data = slab_analyzer.rdf_slab_global
 ```
 
+
+## Kirkwood $G_K$ Factor
+
+The local orientational order of molecular dipole moments is intrinsically linked to the macroscopic dielectric constant of polar liquids. This relationship can be expressed via the Kirkwood-Fröhlich equation:
+
+$$\frac{4\pi \beta N \mu^2 G_K}{\Omega} = \frac{(\epsilon - 1)(2\epsilon + 1)}{\epsilon}$$
+
+Where:
+* $N$ is the number of polar molecules in a system of total volume $\Omega$.
+* $\mu$ is the magnitude of the liquid-phase molecular dipole moment.
+* $\beta$ represents the thermodynamic beta ($\frac{1}{k_B T}$).
+* $\epsilon$ is the static dielectric constant of the system.
+
+The distance-dependent Kirkwood $G_K$ factor approaches a constant value at long ranges, making it an exceptionally useful property to estimate the dielectric constant from short-range molecular interactions.
+
+#### Mathematical Formulation
+The distance-dependent Kirkwood $G_K$ factor evaluated for water configurations is computed using the following ensemble average:
+
+$$G_K(r) = \frac{\langle \sum_{i=1}^{N} \mathbf{\mu}_i \cdot \mathbf{M}_i(r) \rangle}{\langle N \rangle \mu^2}$$
+
+Where $\mathbf{M}_i(r)$ is the net total sum of all molecular dipoles $\mathbf{\mu}$ located within a cutoff sphere of radius $r$ centered around the reference dipole $\mathbf{\mu}_i$ (explicitly including $\mathbf{\mu}_i$ itself).
+
+#### Usage
+
+```bash
+u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
+boxX = 48.57
+boxY = 15.667
+boxZ = 15.076
+box = [boxX, boxY, boxZ, 90, 90, 90]
+u_if.dimensions = box
+start_stop_step = [0, -1, 1]
+print_results_path = "/results/"
+
+import kirkwood_gk_interface
+
+pbc=True
+dim='x'
+bin_size = 0.02
+selection1 = 'name O'; selection2 = 'name O'
+if_q0_nac = kirkwood_gk_interface.Kirkwood_Gk(u_if, box, print_results_path, pbc, bin_size, dim, selection1, selection2, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
+
+# ----- Run analysis
+kw_gk_mu_aver_global = if_q0_nac.run()
+```
+
 ---
 
 ## Automated Code Quality & Testing

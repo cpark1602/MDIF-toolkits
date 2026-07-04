@@ -56,56 +56,56 @@ print_results_path = w_path + "/results/"  # To save the results
 #valdip_IF = if_q0_nac.run( start_stop_step[0], start_stop_step[1], start_stop_step[2] )
 
 
-## RDF
-if __name__ == '__main__':
-   import rdf_slab
-   IdentityA = "O"
-   IdentityB = "O"
-
-   ag1 = u_if.select_atoms(f'name {IdentityA}')
-   ag2 = u_if.select_atoms(f'name {IdentityB}')
-
-   # Initialize our slab analyzer (Slab bounds set from X=0 to X=4)
-   slab_analyzer = rdf_slab.InterSlabRDF(u_if, box, cutoff_slab=[8, 12], binsize=0.1, exclusion_block=[1, 1])
-
-   print("Starting trajectory analysis loop...")
-   # Loop across frames without manually clearing internal arrays
-   for ts in u_if.trajectory:
-       slab_analyzer._single_frame(ts, ag1, ag2)
-
-   slab_analyzer.conclude()
-
-   # Resolve your query about the first bin:
-   # At r -> 0, Lennard-Jones repulsion means atoms cannot overlap.
-   # Any signal in the first bin is an artifact of bin limits or self-interaction!
-   bins = slab_analyzer.bins
-   rdf_data = slab_analyzer.rdf_slab_global
-   print(bins, rdf_data)
-   # Save arrays cleanly
-   #np.save('rdf_mda_slab_results1.npy', np.array([bins, rdf_data], dtype=object))
-   #
-   ## Output to clean GitHub-friendly dat file
-   #out_name = f"rdf_mda_slab_{IdentityA}-{IdentityB}.dat"
-   #with open(out_name, 'w') as fout:
-   #    for b, r in zip(bins, rdf_data):
-   #        fout.write(f"{b:.4f} {r:.6f}\n")
-   #
-   #print(f"Analysis finished. Data saved to {out_name}")
+### RDF
+#if __name__ == '__main__':
+#   import rdf_slab
+#   IdentityA = "O"
+#   IdentityB = "O"
+#
+#   ag1 = u_if.select_atoms(f'name {IdentityA}')
+#   ag2 = u_if.select_atoms(f'name {IdentityB}')
+#
+#   # Initialize our slab analyzer (Slab bounds set from X=0 to X=4)
+#   slab_analyzer = rdf_slab.InterSlabRDF(u_if, box, cutoff_slab=[8, 12], binsize=0.1, exclusion_block=[1, 1])
+#
+#   print("Starting trajectory analysis loop...")
+#   # Loop across frames without manually clearing internal arrays
+#   for ts in u_if.trajectory:
+#       slab_analyzer._single_frame(ts, ag1, ag2)
+#
+#   slab_analyzer.conclude()
+#
+#   # Resolve your query about the first bin:
+#   # At r -> 0, Lennard-Jones repulsion means atoms cannot overlap.
+#   # Any signal in the first bin is an artifact of bin limits or self-interaction!
+#   bins = slab_analyzer.bins
+#   rdf_data = slab_analyzer.rdf_slab_global
+#   print(bins, rdf_data)
+#   # Save arrays cleanly
+#   #np.save('rdf_mda_slab_results1.npy', np.array([bins, rdf_data], dtype=object))
+#   #
+#   ## Output to clean GitHub-friendly dat file
+#   #out_name = f"rdf_mda_slab_{IdentityA}-{IdentityB}.dat"
+#   #with open(out_name, 'w') as fout:
+#   #    for b, r in zip(bins, rdf_data):
+#   #        fout.write(f"{b:.4f} {r:.6f}\n")
+#   #
+#   #print(f"Analysis finished. Data saved to {out_name}")
 
 
 ## Kirkwood g factor
-# if __name__ == '__main__':
-#    import kirkwood_gk_interface
-#
-#    pbc=True
-#    dim='x'
-#    bin_size = 0.02
-#    selection1 = 'name O'; selection2 = 'name O'
-#    if_q0_nac = kirkwood_gk_interface.Kirkwood_Gk(u_if, box, print_results_path, pbc, bin_size, dim, selection1, selection2, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
-#
-#    # ----- Run analysis
-#    #if_q0_nac.run( start_stop_step[0], start_stop_step[1], start_stop_step[2] )
-#    if_q0_nac.run()
+if __name__ == '__main__':
+   import kirkwood_gk_interface
+
+   pbc=True
+   dim='x'
+   bin_size = 0.02
+   selection1 = 'name O'; selection2 = 'name O'
+   if_q0_nac = kirkwood_gk_interface.Kirkwood_Gk(u_if, box, print_results_path, pbc, bin_size, dim, selection1, selection2, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
+
+   # ----- Run analysis
+   kw_gk_mu_aver_global = if_q0_nac.run()
+   print(kw_gk_mu_aver_global)
 
 ## Conductivity
 # if __name__ == '__main__':

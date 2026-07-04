@@ -450,3 +450,5 @@ class Dangling_bonds:
                 # Input: the ids, i, of Oxygen atoms
                 # return (ND, SD_perpendicular, SD_parallel, DD)
                 self._getCosTheta(i)
+
+        return [self.valdip_IF_xaxis, self.valdip_IF_yaxis, self.valdip_IF_zaxis]
