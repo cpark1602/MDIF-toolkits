@@ -36,6 +36,45 @@ The package contains targeted workflows optimized for spatial sorting and time-c
 
 Calculates the spatial mass distribution of different atomic species (e.g., water, ions) along a specific axis perpendicular to the slab geometry surface.
 
+
+#### Usage
+```bash
+import MDAnalysis as mda
+import scipy.constants
+
+u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
+boxX = 48.57
+boxY = 15.667
+boxZ = 15.076
+box = [boxX, boxY, boxZ, 90, 90, 90]
+u_if.dimensions = box
+start_stop_step = [0, -1, 1]
+print_results_path = "/results/"
+
+import mass_density
+
+dim = "x"
+bin_size = 0.02
+pbc = True
+if_q0_nac = mass_density.Mass_density(
+    u_if,
+    box,
+    print_results_path,
+    pbc,
+    bin_size,
+    dim,
+    start=start_stop_step[0],
+    stop=start_stop_step[1],
+    step=start_stop_step[2],
+)
+
+his_edges, number_density_O = if_q0_nac._get_densityProfile("O")
+his_edges, number_density_H = if_q0_nac._get_densityProfile("H")
+his_edges, number_density_Au = if_q0_nac._get_densityProfile("Au")
+his_edges, number_density_Ne = if_q0_nac._get_densityProfile("Ne")
+```
+
+
 ### Water Dipole Orientation Angles
 Analyzes the structural ordering and polarization of water molecules in proximity to electrified interfaces by measuring the distribution of dipole vector angles relative to the surface normal.
 
@@ -74,8 +113,8 @@ To run tests locally on your machine, simply execute:
 
     Developer: Chanbum Park (Sorbonne Université, CNRS)
                chanbum.park@sorbonne-universite.fr
-               Chanbum.Park@ruhr-uni-bochum.de
-               Chanbum.Park@theochem.ruhr-uni-bochum.de
+               chanbum.park@ruhr-uni-bochum.de
+               chanbum.park@theochem.ruhr-uni-bochum.de
 
     GitHub Repository: cpark1602/MDIF-toolkits
 
