@@ -32,6 +32,9 @@ dependencies = [
 [project.scripts]
 mdif-run = "MDIF-toolkits.main:main" # Optional terminal execution shortcut
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/MDIF-toolkits"]
+
 # Add these two lines at the very bottom of the file:
 [tool.hatch.metadata]
 allow-direct-references = true
