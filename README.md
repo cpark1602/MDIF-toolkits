@@ -56,7 +56,7 @@ import mass_density
 dim = "x"
 bin_size = 0.02
 pbc = True
-if_q0_nac = mass_density.Mass_density(
+_u_if = mass_density.Mass_density(
     u_if,
     box,
     print_results_path,
@@ -68,10 +68,10 @@ if_q0_nac = mass_density.Mass_density(
     step=start_stop_step[2],
 )
 
-his_edges, number_density_O = if_q0_nac._get_densityProfile("O")
-his_edges, number_density_H = if_q0_nac._get_densityProfile("H")
-his_edges, number_density_Au = if_q0_nac._get_densityProfile("Au")
-his_edges, number_density_Ne = if_q0_nac._get_densityProfile("Ne")
+his_edges, number_density_O = _u_if._get_densityProfile("O")
+his_edges, number_density_H = _u_if._get_densityProfile("H")
+his_edges, number_density_Au = _u_if._get_densityProfile("Au")
+his_edges, number_density_Ne = _u_if._get_densityProfile("Ne")
 ```
 
 
@@ -82,16 +82,6 @@ Analyzes the structural ordering and polarization of water molecules in proximit
 
 ```bash
 import MDAnalysis as mda
-u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
-boxX = 48.57
-boxY = 15.667
-boxZ = 15.076
-box = [boxX, boxY, boxZ, 90, 90, 90]
-u_if.dimensions = box
-start_stop_step = [0, -1, 1]
-print_results_path = "/results/"
-
-
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
 boxY = 15.667
@@ -127,10 +117,9 @@ start_stop_step = [0, -1, 1]
 print_results_path = "/results/"
 
 import acf
-if_q0_nac = acf.ACF(u_if, box, HBs_criteria_input, 'name O', 'name O', print_results_path, cutoff_dist_O_H =3.5, cutoff_dist_donor_acceptor = 3.5, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], angle=35.0, pbc=True, start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2], nac='IF') 
+_u_if = acf.ACF(u_if, box, HBs_criteria_input, 'name O', 'name O', print_results_path, cutoff_dist_O_H =3.5, cutoff_dist_donor_acceptor = 3.5, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], angle=35.0, pbc=True, start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2], nac='IF') 
 
-# ----- Run analysis
-# if_q0_nac.run()
+_u_if.run()
 ```
 
 
@@ -222,7 +211,7 @@ pbc=True
 dim='x'
 bin_size = 0.02
 selection1 = 'name O'; selection2 = 'name O'
-if_q0_nac = kirkwood_gk_interface.Kirkwood_Gk(u_if, box, print_results_path, pbc, bin_size, dim, selection1, selection2, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
+_u_if = kirkwood_gk_interface.Kirkwood_Gk(u_if, box, print_results_path, pbc, bin_size, dim, selection1, selection2, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
 ```
 
 ### Ionic conductivity
@@ -238,12 +227,12 @@ Ex = 0.01 # External Field
 atom1 = 'Li' # Lithium ion
 atom2 = 'N3' # TFSI ion
 
-u_if_q0_nac = mda.Universe(os.path.join(w_path,trj_file_pdb), os.path.join(w_path,trj_file_trj_1))
+u_if = mda.Universe(os.path.join(w_path,trj_file_pdb), os.path.join(w_path,trj_file_trj_1))
 
 start_stop_step = [0, -1, 1] 
-if_q0_nac = conductivity.Conductivity(u_if_q0_nac, 'name '+atom1, 'name '+atom2, print_results_path, Ex, start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
-if_q0_nac.run()
-kw_gk_mu_aver_global = if_q0_nac.run()
+_u_if = conductivity.Conductivity(u_if, 'name '+atom1, 'name '+atom2, print_results_path, Ex, start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
+_u_if.run()
+kw_gk_mu_aver_global = _u_if.run()
 ```
 
 ### Mean Squared Displacement
@@ -274,14 +263,14 @@ import msd
 trj_file1 = "run-pos.pdb"
 trj_file2 = "run-pos.dcd"
 
-u = mda.Universe(os.path.join(trj_file1), os.path.join(trj_file2))
+u_if = mda.Universe(os.path.join(trj_file1), os.path.join(trj_file2))
 print("total nr. of frame: ", len(u.trajectory))
-tot_frames = len(u.trajectory)
+tot_frames = len(u_if.trajectory)
 skip = int(1)
 start_stop_step = [0, -1, skip]  # if xtc gro are loaded.
 
-u_msd = msd.MSD(
-    u,
+_u_if = msd.MSD(
+    u_if,
     select="index 2",
     msd_type="xyz",
     fft=True,
@@ -290,9 +279,9 @@ u_msd = msd.MSD(
     step=start_stop_step[2],
 )  
 
-u_msd.run()
-msd = u_msd.timeseries
-nframes = u_msd.n_frames
+_u_if.run()
+msd = _u_if.timeseries
+nframes = _u_if.n_frames
 timestep = 1  # 0.5
 lagtimes = np.arange(nframes) * timestep * skip
 ```
