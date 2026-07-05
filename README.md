@@ -101,7 +101,6 @@ u_if.dimensions = box
 start_stop_step = [0, -1, 1]
 print_results_path = "/results/"
 
-# ----- Load dipole angle analysis
 import dipole_angles
 pbc=True
 dim='x'
@@ -138,10 +137,6 @@ if_q0_nac = acf.ACF(u_if, box, HBs_criteria_input, 'name O', 'name O', print_res
 ### Ionic Conductivity
 Evaluates charge transport dynamics across the electrolyte layer by parsing collective ionic current fluctuations under bias potentials.
 
-### Mean Squared Displacement (MSD)
-
-Calculates the translational diffusion coefficients of ionic species and solvent clusters in bulk or confined slab environments.
-
 ### Radial Distribution Function (RDF) in Slab Geometry
 When computing the Radial Distribution Function (RDF) near an interface, the system exhibits strong anisotropy along the surface normal (typically chosen as the $z$-axis or $x$-axis depending on your simulation setup). Because of this broken symmetry, the conventional isotropic 3D spherical RDF fails to properly capture the local structural changes.
 
@@ -173,11 +168,10 @@ IdentityB = "O"
 ag1 = u_if.select_atoms(f'name {IdentityA}')
 ag2 = u_if.select_atoms(f'name {IdentityB}')
 
-# Initialize our slab analyzer (Slab bounds set from X=0 to X=4)
 slab_analyzer = rdf_slab.InterSlabRDF(u_if, box, cutoff_slab=[8, 12], binsize=0.1, exclusion_block=[1, 1])
 
 print("Starting trajectory analysis loop...")
-# Loop across frames without manually clearing internal arrays
+
 for ts in u_if.trajectory:
     slab_analyzer._single_frame(ts, ag1, ag2)
 
@@ -272,13 +266,6 @@ $$D = \lim_{t \to \infty} \frac{1}{2d \cdot t} \langle |\mathbf{r}_i(t) - \mathb
 
 Where $d$ represents the dimensionality of the system (typically $d = 3$ for standard bulk 3D diffusion).
 
-#### Repository Structure
-
-This repository features two distinct methods to compute the MSD curve from a trajectory:
-
-1. **`main_Analysis_msd.py`**: Utilizes the standard `MDAnalysis` framework to extract spatial coordinates and directly compute displacements frame-by-frame.
-2. **`msd_fft.py`**: Employs an accelerated **Fast Fourier Transform (FFT)** approach based on the Wiener-Khinchin theorem. This reduces the algorithmic complexity from a slow $O(N^2)$ direct window loop to an incredibly fast $O(N \log N)$ execution, ideal for long trajectories.
-
 #### Usage
 ```bash
 import MDAnalysis as mda
@@ -301,7 +288,7 @@ u_msd = msd.MSD(
     start=start_stop_step[0],
     stop=start_stop_step[1],
     step=start_stop_step[2],
-)  # tot_frames
+)  
 
 u_msd.run()
 msd = u_msd.timeseries
