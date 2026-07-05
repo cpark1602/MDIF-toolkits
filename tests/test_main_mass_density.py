@@ -6,6 +6,7 @@ import numpy as np
 import warnings
 warnings.filterwarnings(action="once")
 import logging
+import os
 
 logger = logging.getLogger("MDAnalysis.analysis.hbonds")
 
