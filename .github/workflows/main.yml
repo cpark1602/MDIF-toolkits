@@ -41,7 +41,7 @@ jobs:
           # Fails the build on critical Python syntax errors (like undefined names)
           ruff check . --select E9,F63,F7,F82
 
-      ## 6. Run your automated unit tests
-      #- name: Test with pytest
-      #  run: |
-      #    pytest
+      # 6. Run your automated unit tests
+      - name: Test with pytest
+        run: |
+          pytest
