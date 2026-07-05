@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from MDAnalysis.lib.NeighborSearch import AtomNeighborSearch
 from MDAnalysis.lib import distances
+from MDAnalysis import NoDataError
 
 import numpy as np
 import os
