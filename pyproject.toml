@@ -8,7 +8,7 @@ version = "0.1.0"
 authors = [
     { name="Chanbum Park", email="chanbum.park@ruhr-uni-bochum.de" }
 ]
-description = "Molecular Dynamics Framework toolkits for atomistic analysis."
+description = "MDa4IFtoolkits** (Molecular Dynamics Analysis for Interfacial Systems Toolkits) is an open-source analysis package designed for atomistic simulations featuring interfacial geometries."
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
@@ -29,11 +29,11 @@ dependencies = [
 "Homepage" = "https://github.com/cpark1602/MDa4IFtoolkits"
 "Bug Tracker" = "https://github.com/cpark1602/MDa4IFtoolkits/issues"
 
-[project.scripts]
-mdif-run = "MDa4IFtoolkits.main:main" # Optional terminal execution shortcut
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/MDa4IFtoolkits"]
+
+[project.scripts]
+mdif-run = "MDa4IFtoolkits.main:main" # Optional terminal execution shortcut
 
 # Add these two lines at the very bottom of the file:
 [tool.hatch.metadata]
