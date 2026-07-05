@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "MDIF-toolkits"   # The unique name users will type into 'pip install'
+name = "MDa4IFtoolkits"   # The unique name users will type into 'pip install'
 version = "0.1.0"
 authors = [
     { name="Chanbum Park", email="chanbum.park@ruhr-uni-bochum.de" }
@@ -26,14 +26,14 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/cpark1602/MDIF-toolkits"
-"Bug Tracker" = "https://github.com/cpark1602/MDIF-toolkits/issues"
+"Homepage" = "https://github.com/cpark1602/MDa4IFtoolkits"
+"Bug Tracker" = "https://github.com/cpark1602/MDa4IFtoolkits/issues"
 
 [project.scripts]
-mdif-run = "MDIF-toolkits.main:main" # Optional terminal execution shortcut
+mdif-run = "MDa4IFtoolkits.main:main" # Optional terminal execution shortcut
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/MDIF-toolkits"]
+packages = ["src/MDa4IFtoolkits"]
 
 # Add these two lines at the very bottom of the file:
 [tool.hatch.metadata]
