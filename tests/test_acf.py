@@ -9,6 +9,7 @@ warnings.filterwarnings(action='once')
 
 from MDAnalysis.lib.NeighborSearch import AtomNeighborSearch
 from MDAnalysis.lib import distances
+from MDAnalysis import NoDataError
 
 class ACF:
     def __init__(self, universe, box, HBs_criteria, selection1, selection2, print_results_path, cutoff_dist_O_H, cutoff_dist_donor_acceptor, cutoff_IF, cutoff_BULK, angle, pbc, start=None, stop=None, step=None, nac='IF'):   #  , **kwargs
@@ -18,7 +19,7 @@ class ACF:
         self.t_l = []
 
         self.total_frame = len(self.u.trajectory)
-        print("Total frame:", self.total_frame)
+        #print("Total frame:", self.total_frame)
         self.box = box
         self.selection1 = selection1
         self.selection2 = selection2

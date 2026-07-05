@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import numpy as np
+from MDAnalysis import NoDataError
 
 
 import warnings
@@ -60,7 +61,7 @@ class MSD:
         self.fft = fft
 
         # local
-        self.ag = u.select_atoms(self.select)
+        self.ag = self.u.select_atoms(self.select)
         self.n_particles = len(self.ag)
         print("n particle: ", self.n_particles)
         self._position_array = None
