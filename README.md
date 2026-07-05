@@ -1,9 +1,7 @@
-# MDIF-toolkits
-MDIF-toolkits is a analysis package for atomistic simulations with interfacial geometry.
+# MDa4IFtoolkits
+**MDa4IFtoolkits** (Molecular Dynamics Analysis for Interfacial Systems Toolkits) is an open-source analysis package designed for atomistic simulations featuring interfacial geometries.
 
-# MDIF-toolkits
-
-[![CI](https://github.com/cpark1602/MDIF-toolkits/actions/workflows/ci.yml/badge.svg)](https://github.com/cpark1602/MDIF-toolkits/actions)
+[![CI](https://github.com/cpark1602/MDa4IFtoolkits/actions/workflows/ci.yml/badge.svg)](https://github.com/cpark1602/MDa4IFtoolkits/actions)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
 A specialized scientific Python package designed to post-process, analyze, and extract structural and transport properties from Molecular Dynamics (MD) trajectories of complex electrified interfaces and slab geometries.
@@ -20,8 +18,8 @@ A specialized scientific Python package designed to post-process, analyze, and e
 To install the toolkit locally on your laptop or office machine so that changes you make to the source files are instantly active, clone the repository and run an editable installation:
 
 ```bash
-git clone [https://github.com/cpark1602/MDIF-toolkits.git](https://github.com/cpark1602/MDIF-toolkits.git)
-cd MDIF-toolkits
+git clone [https://github.com/cpark1602/MDa4IFtoolkits.git](https://github.com/cpark1602/MDa4IFtoolkits.git)
+cd MDa4IFtoolkits
 pip install -e .
 ```
 
@@ -311,6 +309,6 @@ To run tests locally on your machine, simply execute:
                chanbum.park@ruhr-uni-bochum.de
                chanbum.park@theochem.ruhr-uni-bochum.de
 
-    GitHub Repository: cpark1602/MDIF-toolkits
+    GitHub Repository: cpark1602/MDa4IFtoolkits
 
 
