@@ -48,3 +48,7 @@ ignore = ["D107", "D301", "F841"]  # ignore specific rules
 
 #[tool.ruff.pydocstyle]
 #convention = "pep257"  # select docstyle convention
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
