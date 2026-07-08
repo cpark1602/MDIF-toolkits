@@ -103,7 +103,22 @@ valdip_IF =  _u_if.run( start_stop_step[0], start_stop_step[1], start_stop_step[
 ```
 
 ### Hydrogen Bond Autocorrelation Function (ACF)
-Tracks the dynamic lifetime, breaking, and forming kinetics of hydrogen bond networks near a surface using structural time-correlation frameworks.
+Liquid water molecules form a hydrogen-bonded network characterized by continuous breaking and reformation due to thermal fluctuations. These dynamics are intrinsically linked to both the translational and rotational motion of the molecules.
+
+To quantify these processes in our molecular dynamics (MD) simulations, we analyze the second-rank orientational time correlation function (OTCF), $C_2(t)$, of the $\text{O–H}$ bond:
+
+$$C_2(t) = \frac{\langle P_2(\mathbf{u}(0) \cdot \mathbf{u}(t)) \rangle}{\langle P_2(\mathbf{u}(0) \cdot \mathbf{u}(0)) \rangle}$$,
+
+where $P_2(x)$ is the second-rank Legendre polynomial defined as:
+
+$$P_2(x) = \frac{3x^2 - 1}{2}$$,
+
+where $\mathbf{u}(t)$ represents the unit vector along the $\text{O–H}$ bond axis at time $t$. The dot product $\mathbf{u}(0) \cdot \mathbf{u}(t) = \cos\theta(t)$ defines the cosine of the angle $\theta$ swept by the bond vector between the initial time $0$ and time $t$. The angled brackets $\langle \dots \rangle$ denote an ensemble average over multiple time origins and all active water molecules in the system.
+
+The orientational time correlation function $C_2(t)$ is particularly useful because it is the function directly related to NMR relaxation rates. From this, the reorientational correlation time ($\tau_2$) can be obtained by integrating $C_2(t)$ over time:
+
+$$\tau_2 = \int_{0}^{\infty} C_2(t) \, dt$$.
+
 
 #### Usage
 ```bash
