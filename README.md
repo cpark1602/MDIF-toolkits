@@ -139,16 +139,7 @@ _u_if.run()
 ```
 
 
-### Ionic Conductivity
-Evaluates charge transport dynamics across the electrolyte layer by parsing collective ionic current fluctuations under bias potentials.
 
-The electric conductivities of the solutions in our simulations are computed using Ohm’s law:
-
-$$J = \kappa E$$
-
-where $E$ is the applied electric field and $J = \sum_i J_i = \sum_i \kappa_i E$ represents the total current density. This relationship naturally defines the partial ionic conductivity, $\kappa_i$, for each individual ionic species. 
-
-The individual conductivities ($\kappa_i$) are evaluated from the linear slope of $J$ versus $E$ strictly within the linear-response region.
 
 ### Radial Distribution Function (RDF) in Slab Geometry
 When computing the Radial Distribution Function (RDF) near an interface, the system exhibits strong anisotropy along the surface normal (typically chosen as the $z$-axis or $x$-axis depending on your simulation setup). Because of this broken symmetry, the conventional isotropic 3D spherical RDF fails to properly capture the local structural changes.
@@ -238,7 +229,16 @@ selection1 = 'name O'; selection2 = 'name O'
 _u_if = kirkwood_gk_interface.Kirkwood_Gk(u_if, box, print_results_path, pbc, bin_size, dim, selection1, selection2, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
 ```
 
-### Ionic conductivity
+### Ionic Conductivity
+Evaluates charge transport dynamics across the electrolyte layer by parsing collective ionic current fluctuations under bias potentials.
+
+The electric conductivities of the solutions in our simulations are computed using Ohm’s law:
+
+$$J = \kappa E$$
+
+where $E$ is the applied electric field and $J = \sum_i J_i = \sum_i \kappa_i E$ represents the total current density. This relationship naturally defines the partial ionic conductivity, $\kappa_i$, for each individual ionic species. 
+
+The individual conductivities ($\kappa_i$) are evaluated from the linear slope of $J$ versus $E$ strictly within the linear-response region.
 
 
 #### Usage
