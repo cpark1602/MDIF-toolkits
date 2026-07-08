@@ -1,7 +1,7 @@
 # MDa4IFtoolkits
 **MDa4IFtoolkits** (Molecular Dynamics Analysis for Interfacial Systems Toolkits) is an open-source analysis package designed for atomistic simulations featuring interfacial geometries.
 
-<![![CI](https://github.com/cpark1602/MDa4IFtoolkits/actions/workflows/ci.yml/badge.svg)](https://github.com/cpark1602/MDa4IFtoolkits/actions)>
+<!--- [![CI](https://github.com/cpark1602/MDa4IFtoolkits/actions/workflows/ci.yml/badge.svg)](https://github.com/cpark1602/MDa4IFtoolkits/actions) --->
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
 A specialized scientific Python package designed to post-process, analyze, and extract structural and transport properties from Molecular Dynamics (MD) trajectories of complex electrified interfaces and slab geometries.
