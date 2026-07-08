@@ -289,6 +289,9 @@ $$D = \lim_{t \to \infty} \frac{1}{2d \cdot t} \langle |\mathbf{r}_i(t) - \mathb
 
 Where $d$ represents the dimensionality of the system (typically $d = 3$ for standard bulk 3D diffusion).
 
+
+![Mean square displacement over time of Li+ ions in different systems (source: doi.org/10.1016/j.ensm.2022.07.008).](./figs/msd-Li.png)
+
 #### Usage
 ```bash
 import MDAnalysis as mda
