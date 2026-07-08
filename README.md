@@ -30,6 +30,8 @@ pip install -e .
 
 The package contains targeted workflows optimized for spatial sorting and time-correlation analysis of interfacial systems:
 
+---
+
 ### Mass Density Profiling
 
 Calculates the spatial mass distribution of different atomic species (e.g., water, ions) along a specific axis perpendicular to the slab geometry surface.
@@ -73,6 +75,7 @@ his_edges, number_density_Au = _u_if._get_densityProfile("Au")
 his_edges, number_density_Ne = _u_if._get_densityProfile("Ne")
 ```
 
+---
 
 ### Water Dipole Orientation Angles
 Analyzes the structural ordering and polarization of water molecules in proximity to electrified interfaces by measuring the distribution of dipole vector angles relative to the surface normal.
@@ -101,6 +104,8 @@ _u_if = dipole_angles.Dangling_bonds(u_if, box, print_results_path, pbc, bin_siz
 
 valdip_IF =  _u_if.run( start_stop_step[0], start_stop_step[1], start_stop_step[2] )
 ```
+
+---
 
 ### Hydrogen Bond Autocorrelation Function (ACF)
 Liquid water molecules form a hydrogen-bonded network characterized by continuous breaking and reformation due to thermal fluctuations. These dynamics are intrinsically linked to both the translational and rotational motion of the molecules.
@@ -139,7 +144,7 @@ _u_if.run()
 ```
 
 
-
+---
 
 ### Radial Distribution Function (RDF) in Slab Geometry
 When computing the Radial Distribution Function (RDF) near an interface, the system exhibits strong anisotropy along the surface normal (typically chosen as the $z$-axis or $x$-axis depending on your simulation setup). Because of this broken symmetry, the conventional isotropic 3D spherical RDF fails to properly capture the local structural changes.
@@ -185,8 +190,9 @@ bins = slab_analyzer.bins
 rdf_data = slab_analyzer.rdf_slab_global
 ```
 
+---
 
-## Kirkwood $G_K$ Factor
+### Kirkwood $G_K$ Factor
 
 The local orientational order of molecular dipole moments is intrinsically linked to the macroscopic dielectric constant of polar liquids. This relationship can be expressed via the Kirkwood-Fröhlich equation:
 
@@ -229,6 +235,8 @@ selection1 = 'name O'; selection2 = 'name O'
 _u_if = kirkwood_gk_interface.Kirkwood_Gk(u_if, box, print_results_path, pbc, bin_size, dim, selection1, selection2, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2])
 ```
 
+---
+
 ### Ionic Conductivity
 Evaluates charge transport dynamics across the electrolyte layer by parsing collective ionic current fluctuations under bias potentials.
 
@@ -258,6 +266,8 @@ _u_if = conductivity.Conductivity(u_if, 'name '+atom1, 'name '+atom2, print_resu
 _u_if.run()
 kw_gk_mu_aver_global = _u_if.run()
 ```
+
+---
 
 ### Mean Squared Displacement
 This repository provides Python tools to compute the Mean Squared Displacement (MSD) of molecules from Molecular Dynamics (MD) trajectory data using both direct tracking and accelerated Fast Fourier Transform (FFT) methods.
@@ -309,8 +319,6 @@ nframes = _u_if.n_frames
 timestep = 1  # 0.5
 lagtimes = np.arange(nframes) * timestep * skip
 ```
-
-
 
 ---
 
