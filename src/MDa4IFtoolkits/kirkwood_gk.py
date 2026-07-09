@@ -304,4 +304,132 @@ class Kirkwood_Gk:
             if d.position[0] > 18 and d.position[0] <= 24:
                 _dim = 'xyz'
                 # Note the cutoff boundary inflation using kw_gk_cutoff to capture intersecting neighbor buffers
-                mu_1_bulk, mu_2_bulk, mu_1_wc_bulk, mu_2_wc_bulk = self._get_mu_1_mu_2_for_layer(key, value, _s1, dict_Oatom_index_to_i, dict_oxygen_with_h
+                mu_1_bulk, mu_2_bulk, mu_1_wc_bulk, mu_2_wc_bulk = self._get_mu_1_mu_2_for_layer(key, value, _s1, dict_Oatom_index_to_i, dict_oxygen_with_h_tagged, kw_gk_cutoff, _box, _dim, ts, n_frames_i, [18-kw_gk_cutoff, 24+kw_gk_cutoff])
+                dot_mu_1_2_bulk += np.dot(mu_1_bulk, mu_2_bulk)
+                mu_bulk += np.linalg.norm(mu_1_bulk)       
+                dot_mu_1_2_wc_bulk += np.dot(mu_1_wc_bulk, mu_2_wc_bulk)  
+                mu_wc_bulk += np.linalg.norm(mu_1_wc_bulk)       
+
+                _dim = 'x'
+                dot_mu_1_2_bulk_x += np.dot(mu_1_bulk, mu_2_bulk)
+                mu_bulk_x += np.linalg.norm(mu_1_bulk)
+                dot_mu_1_2_wc_bulk_x += np.dot(mu_1_wc_bulk, mu_2_wc_bulk)  
+                mu_wc_bulk_x += np.linalg.norm(mu_1_wc_bulk)
+
+                _dim = 'yz'
+                dot_mu_1_2_bulk_yz += np.dot(mu_1_bulk, mu_2_bulk)
+                mu_bulk_yz += np.linalg.norm(mu_1_bulk)
+                dot_mu_1_2_wc_bulk_yz += np.dot(mu_1_wc_bulk, mu_2_wc_bulk)  
+                mu_wc_bulk_yz += np.linalg.norm(mu_1_wc_bulk)
+
+                self.count_o_bulk += 1
+
+            # -----------------------------------------------------------------
+            # Sub-Layer Logic: Far-End / Outside Region (30 to 36 Angstroms)
+            # -----------------------------------------------------------------
+            if d.position[0] > 30.0 and d.position[0] <= 36:
+                _dim = 'xyz'
+                mu_1_ne, mu_2_ne, mu_1_wc_ne, mu_2_wc_ne = self._get_mu_1_mu_2_for_layer(key, value, _s1, dict_Oatom_index_to_i, dict_oxygen_with_h_tagged, kw_gk_cutoff, _box, _dim, ts, n_frames_i, [30, 36])
+                dot_mu_1_2_ne += np.dot(mu_1_ne, mu_2_ne)
+                mu_ne += np.linalg.norm(mu_1_ne)       
+                dot_mu_1_2_wc_ne += np.dot(mu_1_wc_ne, mu_2_wc_ne)  
+                mu_wc_ne += np.linalg.norm(mu_1_wc_ne)       
+
+                _dim = 'x'
+                dot_mu_1_2_ne_x += np.dot(mu_1_ne, mu_2_ne)
+                mu_ne_x += np.linalg.norm(mu_1_ne)
+                dot_mu_1_2_wc_ne_x += np.dot(mu_1_wc_ne, mu_2_wc_ne)  
+                mu_wc_ne_x += np.linalg.norm(mu_1_wc_ne)
+
+                _dim = 'yz'
+                dot_mu_1_2_ne_yz += np.dot(mu_1_ne, mu_2_ne)
+                mu_ne_yz += np.linalg.norm(mu_1_ne)
+                dot_mu_1_2_wc_ne_yz += np.dot(mu_1_wc_ne, mu_2_wc_ne)  
+                mu_wc_ne_yz += np.linalg.norm(mu_1_wc_ne)
+
+                self.count_o_ne += 1
+
+            self.count += 1; count_o += 1
+
+        # =====================================================================
+        # Final Normalizations & Gk Factor Statistical Evaluation
+        # =====================================================================
+        self.count_kw_gk_ndx += 1
+        
+        # Calculate mean frame properties
+        mu_aver_per_frame = mu_aver / count_o  
+        dot_mu_1_2_per_frame = dot_mu_1_2 / (len(_s1) * mu_aver_per_frame**2)
+
+        # Normalize localized 10Å interface values
+        if self.count_o_if10AA >= 1:
+            mu_if10AA_aver_per_frame_xyz = mu_if10AA_xyz / self.count_o_if10AA
+            self.dot_mu_1_2_if10AA_per_frame_xyz = dot_mu_1_2_if10AA_xyz / (self.count_o_if10AA * mu_if10AA_aver_per_frame_xyz**2)
+
+            mu_if10AA_aver_per_frame_x = mu_if10AA_x / self.count_o_if10AA
+            self.dot_mu_1_2_if10AA_per_frame_x = dot_mu_1_2_if10AA_x / (self.count_o_if10AA * mu_if10AA_aver_per_frame_x**2)
+
+            mu_if10AA_aver_per_frame_yz = mu_if10AA_yz / self.count_o_if10AA
+            self.dot_mu_1_2_if10AA_per_frame_yz = dot_mu_1_2_if10AA_yz / (self.count_o_if10AA * mu_if10AA_aver_per_frame_yz**2)
+
+        # Compute averages of molecule dipole moments per spatial slab region
+        mu_if_aver_per_frame = mu_if / self.count_o_if
+        mu_bulk_aver_per_frame = mu_bulk / self.count_o_bulk
+        mu_ne_aver_per_frame = mu_ne / self.count_o_ne
+
+        # --- Update Class Output Tracking Arrays: Interface (IF) ---
+        self.mu_if = mu_if / (self.count_o_if) 
+        self.mu_if_x = mu_if_x / (self.count_o_if)
+        self.mu_if_yz = mu_if_yz / (self.count_o_if)
+
+        self.dot_mu_1_2 = dot_mu_1_2 / (len(_s1) * mu_aver_per_frame**2)
+
+        self.dot_mu_1_2_if_per_frame = dot_mu_1_2_if / (self.count_o_if * mu_if_aver_per_frame**2)
+        self.dot_mu_1_2_if    = dot_mu_1_2_if / (self.count_o_if * mu_if_aver_per_frame**2)
+        self.dot_mu_1_2_if_x  = dot_mu_1_2_if_x / (self.count_o_if * self.mu_if_x**2)
+        self.dot_mu_1_2_if_yz = dot_mu_1_2_if_yz / (self.count_o_if * self.mu_if_yz**2)
+
+        # Wannier function corrections (WFC) interface components
+        self.mu_wc_if    = mu_wc_if / (self.count_o_if)
+        self.mu_wc_if_x  = mu_wc_if_x / (self.count_o_if)
+        self.mu_wc_if_yz = mu_wc_if_yz / (self.count_o_if)
+        self.dot_mu_1_2_wc_if    = dot_mu_1_2_wc_if    / (self.count_o_if * mu_if_aver_per_frame**2)
+        self.dot_mu_1_2_wc_if_x  = dot_mu_1_2_wc_if_x  / (self.count_o_if * mu_if_aver_per_frame**2)
+        self.dot_mu_1_2_wc_if_yz = dot_mu_1_2_wc_if_yz / (self.count_o_if * mu_if_aver_per_frame**2)
+
+        # --- Update Class Output Tracking Arrays: Bulk ---
+        self.mu_bulk = mu_bulk / (self.count_o_bulk) 
+        self.mu_bulk_x = mu_bulk_x / (self.count_o_bulk)
+        self.mu_bulk_yz = mu_bulk_yz / (self.count_o_bulk)
+
+        self.dot_mu_1_2_bulk_per_frame = dot_mu_1_2_bulk / (self.count_o_bulk * mu_bulk_aver_per_frame**2)
+        self.dot_mu_1_2_bulk    = dot_mu_1_2_bulk / (self.count_o_bulk * mu_bulk_aver_per_frame**2)
+        self.dot_mu_1_2_bulk_x  = dot_mu_1_2_bulk_x / (self.count_o_bulk * mu_bulk_aver_per_frame**2)
+        self.dot_mu_1_2_bulk_yz = dot_mu_1_2_bulk_yz / (self.count_o_bulk * mu_bulk_aver_per_frame**2)
+        
+        self.mu_wc_bulk    = mu_wc_bulk / (self.count_o_bulk)
+        self.mu_wc_bulk_x  = mu_wc_bulk_x / (self.count_o_bulk)
+        self.mu_wc_bulk_yz = mu_wc_bulk_yz / (self.count_o_bulk)
+        self.dot_mu_1_2_wc_bulk    = dot_mu_1_2_wc_bulk    / (self.count_o_bulk * mu_bulk_aver_per_frame**2)
+        self.dot_mu_1_2_wc_bulk_x  = dot_mu_1_2_wc_bulk_x  / (self.count_o_bulk * mu_bulk_aver_per_frame**2)
+        self.dot_mu_1_2_wc_bulk_yz = dot_mu_1_2_wc_bulk_yz / (self.count_o_bulk * mu_bulk_aver_per_frame**2)
+
+        # --- Update Class Output Tracking Arrays: Far-End (NE) ---
+        self.mu_ne = mu_ne / (self.count_o_ne) 
+        self.mu_ne_x = mu_ne_x / (self.count_o_ne)
+        self.mu_ne_yz = mu_ne_yz / (self.count_o_ne)
+
+        self.dot_mu_1_2_ne_per_frame = dot_mu_1_2_ne / (self.count_o_ne * mu_ne_aver_per_frame**2)
+        self.dot_mu_1_2_ne    = dot_mu_1_2_ne / (self.count_o_ne * mu_ne_aver_per_frame**2)
+        self.dot_mu_1_2_ne_x  = dot_mu_1_2_ne_x / (self.count_o_ne * mu_ne_aver_per_frame**2)
+        self.dot_mu_1_2_ne_yz = dot_mu_1_2_ne_yz / (self.count_o_ne * mu_ne_aver_per_frame**2)
+
+        self.mu_wc_ne    = mu_wc_ne / (self.count_o_ne)
+        self.mu_wc_ne_x  = mu_wc_ne_x / (self.count_o_ne)
+        self.mu_wc_ne_yz = mu_wc_ne_yz / (self.count_o_ne)
+        self.dot_mu_1_2_wc_ne    = dot_mu_1_2_wc_ne    / (self.count_o_ne * mu_ne_aver_per_frame**2)
+        self.dot_mu_1_2_wc_ne_x  = dot_mu_1_2_wc_ne_x  / (self.count_o_ne * mu_ne_aver_per_frame**2)
+        self.dot_mu_1_2_wc_ne_yz = dot_mu_1_2_wc_ne_yz / (self.count_o_ne * mu_ne_aver_per_frame**2)
+
+    def run(self, ts, n_frames_i, _s1, dict_Oatom_index_to_i, dict_oxygen_with_h_tagged, kw_gk_cutoff, _box):
+        """External call API wrapper targeting execution across isolated time frame iterations."""
+        self._single_frame(ts, n_frames_i, _s1, dict_Oatom_index_to_i, dict_oxygen_with_h_tagged, kw_gk_cutoff, _box)
