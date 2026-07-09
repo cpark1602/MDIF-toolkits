@@ -40,8 +40,9 @@ Calculates the spatial mass distribution of different atomic species (e.g., wate
 
 #### Usage
 ```bash
+# System setup
 import MDAnalysis as mda
-import scipy.constants
+import mass_density
 
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
@@ -51,8 +52,6 @@ box = [boxX, boxY, boxZ, 90, 90, 90]
 u_if.dimensions = box
 start_stop_step = [0, -1, 1]
 print_results_path = "/results/"
-
-import mass_density
 
 dim = "x"
 bin_size = 0.02
@@ -69,6 +68,7 @@ _u_if = mass_density.Mass_density(
     step=start_stop_step[2],
 )
 
+# Extracts spatial density distributions
 his_edges, number_density_O = _u_if._get_densityProfile("O")
 his_edges, number_density_H = _u_if._get_densityProfile("H")
 his_edges, number_density_Au = _u_if._get_densityProfile("Au")
@@ -86,6 +86,8 @@ Analyzes the structural ordering and polarization of water molecules in proximit
 
 ```bash
 import MDAnalysis as mda
+import dipole_angles
+
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
 boxY = 15.667
@@ -95,7 +97,6 @@ u_if.dimensions = box
 start_stop_step = [0, -1, 1]
 print_results_path = "/results/"
 
-import dipole_angles
 pbc=True
 dim='x'
 bin_size = 0.02
@@ -128,6 +129,8 @@ $$\tau_2 = \int_{0}^{\infty} C_2(t) \, dt$$.
 #### Usage
 ```bash
 import MDAnalysis as mda
+import acf
+
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
 boxY = 15.667
@@ -137,7 +140,6 @@ u_if.dimensions = box
 start_stop_step = [0, -1, 1]
 print_results_path = "/results/"
 
-import acf
 _u_if = acf.ACF(u_if, box, HBs_criteria_input, 'name O', 'name O', print_results_path, cutoff_dist_O_H =3.5, cutoff_dist_donor_acceptor = 3.5, cutoff_IF = [0, 12], cutoff_BULK = [19, 28], angle=35.0, pbc=True, start=start_stop_step[0], stop=start_stop_step[1], step=start_stop_step[2], nac='IF') 
 
 _u_if.run()
@@ -171,6 +173,7 @@ $$g_{\text{slab}}(r) = \frac{\rho(r)}{\rho_{\text{slab}}}$$.
 ```bash
 import MDAnalysis as mda
 import rdf_slab
+
 IdentityA = "O"
 IdentityB = "O"
 
@@ -217,6 +220,8 @@ Where $\mathbf{M}_i(r)$ is the net total sum of all molecular dipoles $\mathbf{\
 
 ```bash
 import MDAnalysis as mda
+import kirkwood_gk_interface
+
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
 boxY = 15.667
@@ -226,7 +231,6 @@ u_if.dimensions = box
 start_stop_step = [0, -1, 1]
 print_results_path = "/results/"
 
-import kirkwood_gk_interface
 
 pbc=True
 dim='x'
@@ -294,6 +298,8 @@ Where $d$ represents the dimensionality of the system (typically $d = 3$ for sta
 
 #### Usage
 ```bash
+import os
+import numpy as np
 import MDAnalysis as mda
 import msd
 
