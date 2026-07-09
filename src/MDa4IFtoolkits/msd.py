@@ -1,47 +1,51 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import warnings
+import logging
 import numpy as np
 from MDAnalysis import NoDataError
 
-
-import warnings
-
+# Setup warning filters and logger configuration to avoid excessive stdout noise
 warnings.filterwarnings(action="once")
-
-import logging
-
 logger = logging.getLogger("MDAnalysis.analysis.hbonds")
 
 
 def find_nearest(array, value):
+    """
+    Finds the index of the element in an array closest to a specified value.
+    Uses an absolute difference minimization strategy.
+    """
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
-    # print('idx: ', idx, array[idx])
     return idx
 
 
 def read_file_x_y(filename):
-    # open_file=argv[1]
+    """
+    Parses a plain-text tabular file extracting the first two numeric 
+    whitespace-separated columns into decoupled Python lists (e.g., X and Y).
+    """
     x = []
     y = []
-    dy = []
     txt = open(filename)
     while True:
         line = txt.readline().strip("\n")
-        # print line
-        if len(line) == 0:
+        if len(line) == 0:  # Break out at EOF (End of File)
             break
         else:
             line = line.split()
             x.append(float(line[0]))
             y.append(float(line[1]))
-            # dy.append(float(line[2]))
     txt.close()
-    return x, y  # , dy
+    return x, y
 
 
 class MSD:
+    """
+    Computes Mean Squared Displacement (MSD) for an MDAnalysis atom group.
+    Supports basic windowed looping or Fast Fourier Transform (FFT) methods via tidynamics.
+    """
     def __init__(
         self,
         universe,
@@ -53,28 +57,32 @@ class MSD:
         step=None,
         **kwargs,
     ):
-
         self.u = universe
-        # args
         self.select = select
         self.msd_type = msd_type
         self.fft = fft
 
-        # local
+        # --- Dynamic Selection Mapping ---
         self.ag = self.u.select_atoms(self.select)
         self.n_particles = len(self.ag)
         print("n particle: ", self.n_particles)
+        
+        # Internal cache tracking raw structural configurations over time
         self._position_array = None
 
-        # result
-        self.msds_by_particle = None
-        self.timeseries = None
+        # --- Storage Result Vectors ---
+        self.msds_by_particle = None  # 2D tracking matrix: [frames, particles]
+        self.timeseries = None        # 1D array profile representing system average MSD
 
+        # --- Coordinate Parsing & Frame Window Range Slicing ---
         self._parse_msd_type()
         self._setup_frames(self.u.trajectory, start=start, stop=stop, step=step)
 
     def _parse_msd_type(self):
-        """Sets up the desired dimensionality of the MSD."""
+        """
+        Parses the directional code to map Cartesian target index keys 
+        and scale projection operations.
+        """
         keys = {
             "x": [0],
             "y": [1],
@@ -98,92 +106,69 @@ class MSD:
         self.dim_fac = len(self._dim)
 
     def _prepare(self):
-        # self.n_frames only available here
-        # these need to be zeroed prior to each run() call
+        """
+        Initializes multi-dimensional zero arrays once the absolute frame count 
+        bounds are determined.
+        """
         self.msds_by_particle = np.zeros((self.n_frames, self.n_particles))
         self._position_array = np.zeros((self.n_frames, self.n_particles, self.dim_fac))
-        # self.timeseries not set here
 
     def _setup_frames(self, trajectory, start=None, stop=None, step=None):
         """
-        Pass a Reader object and define the desired iteration pattern
-        through the trajectory
-
-        Parameters
-        ----------
-        trajectory : mda.Reader
-            A trajectory Reader
-        start : int, optional
-            start frame of analysis
-        stop : int, optional
-            stop frame of analysis
-        step : int, optional
-            number of frames to skip between each analysed frame
-
-
-        .. versionchanged:: 1.0.0
-            Added .frames and .times arrays as attributes
-
+        Configures user frame selection patterns with MDAnalysis native index wrapping checks.
         """
         self._trajectory = trajectory
         start, stop, step = trajectory.check_slice_indices(start, stop, step)
         self.start = start
         self.stop = stop
         self.step = step
+        
+        # Calculate true trajectory tracking spans
         self.n_frames = len(range(start, stop, step))
         self.frames = np.zeros(self.n_frames, dtype=int)
         self.times = np.zeros(self.n_frames)
 
-    def _parse_msd_type(self):
-        r"""Sets up the desired dimensionality of the MSD."""
-        keys = {
-            "x": [0],
-            "y": [1],
-            "z": [2],
-            "xy": [0, 1],
-            "xz": [0, 2],
-            "yz": [1, 2],
-            "xyz": [0, 1, 2],
-        }
-
-        self.msd_type = self.msd_type.lower()
-
-        try:
-            self._dim = keys[self.msd_type]
-        except KeyError:
-            raise ValueError(
-                "invalid msd_type: {} specified, please specify one of xyz, "
-                "xy, xz, yz, x, y, z".format(self.msd_type)
-            )
-
-        self.dim_fac = len(self._dim)
-
     def _single_frame(self):
-        r"""Constructs array of positions for MSD calculation."""
-        # shape of position array set here, use span in last dimension
-        # from this point on
+        """
+        Populates the primary history array with spatial coordinates from the current frame index.
+        """
         self._position_array[self._frame_index] = self.ag.positions[:, self._dim]
 
     def _conclude(self):
+        """
+        Route calculation data pipeline out to processing handlers.
+        """
         if self.fft:
             self._conclude_fft()
         else:
             self._conclude_simple()
 
     def _conclude_simple(self):
-        r"""Calculates the MSD via the simple "windowed" algorithm."""
+        """
+        Calculates the MSD using a classic sliding-window approach over lag times.
+        """
         lagtimes = np.arange(1, self.n_frames)
-        positions = self._position_array.astype(np.float64)
+        positions = self._position_array.astype(np.float64)  # Ensure precision
+        
         for lag in lagtimes:
+            # Shift coordinate arrays by the current lag step
             disp = (
                 positions[:-lag, :, :] - positions[lag:, :, :]
-            )  # positions[frames, atoms, xyz]
-            sqdist = np.square(disp).sum(axis=-1)  # sum is for x^2 + y^2 + z^2
+            )  # Array structure layout: [frames, atoms, coordinates]
+            
+            # Compute squared displacement across active projection axes
+            sqdist = np.square(disp).sum(axis=-1)  
+            
+            # Record average displacements calculated across time windows
             self.msds_by_particle[lag, :] = np.mean(sqdist, axis=0)
+            
+        # Compress tracking dimensions out into an ensemble system average
         self.timeseries = self.msds_by_particle.mean(axis=1)
 
-    def _conclude_fft(self):  # with FFT, np.float64 bit prescision required.
-        r"""Calculates the MSD via the FCA fast correlation algorithm."""
+    def _conclude_fft(self):
+        """
+        Calculates individual atom profiles via the Fast Correlation Algorithm (FCA) using FFTs.
+        """
         try:
             import tidynamics
         except ImportError:
@@ -198,12 +183,19 @@ class MSD:
                 or set fft=False""")
 
         positions = self._position_array.astype(np.float64)
+        
+        # Process individual atom paths using external high-performance routines
         for n in range(self.n_particles):
             self.msds_by_particle[:, n] = tidynamics.msd(positions[:, n, :])
+            
+        # Evaluate collective average across particles
         self.timeseries = self.msds_by_particle.mean(axis=1)
 
     def run(self, **kwargs):
-
+        """
+        Main execution manager looping through target trajectory boundaries 
+        to cache positions before triggering final calculations.
+        """
         self._prepare()
         i = 0
         for ts in self.u.trajectory[self.start : self.stop : self.step]:
@@ -212,5 +204,6 @@ class MSD:
             self.frames[i] = ts.frame
             self._single_frame()
             i += 1
+            
         self._conclude()
         return self
