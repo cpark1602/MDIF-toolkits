@@ -66,7 +66,7 @@ ignore = ["D1",  "PTH103",  "PTH110", "PTH123", "PTH118",  "D200", "D204", "D205
 "dipole_angles.py" = ["PLR2004", "F841", "PLR0915", "PLR0912", "PERF102"]
 "kirkwood_gk_interface.py" = ["ARG002", "PLR2004", "SIM113"]
 "kirkwood_gk.py" = ["ARG002", "PLR2004", "SIM113", "PLR0915"]
-"conductivity.py" = ["ARG002", "PLR0915", "PLR2004", "SIM113", "SIM115"] 
+"conductivity.py" = ["ARG002", "PLR0915", "PLR2004", "SIM113", "SIM115", "D407"] 
 "msd.py" = ["SIM113", "SIM115", "B904", "PTH123", "PLC0415"]
 
   
