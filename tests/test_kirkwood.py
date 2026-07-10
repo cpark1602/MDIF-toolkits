@@ -1,6 +1,7 @@
 import MDAnalysis as mda
 import os
-import MDa4IFtoolkits.kirkwood_gk_interface as kirkwood_gk_interface
+#import MDa4IFtoolkits.kirkwood_gk_interface as kirkwood_gk_interface
+from MDa4IFtoolkits import kirkwood_gk_interface
 
 def test_dipole_angles():
     w_path = "./tests/"

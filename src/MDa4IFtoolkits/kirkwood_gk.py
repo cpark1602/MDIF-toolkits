@@ -1,7 +1,5 @@
 import numpy as np
-import MDAnalysis as mda
 from MDAnalysis.analysis import distances
-import os
 import sys
 
 class Kirkwood_Gk:
