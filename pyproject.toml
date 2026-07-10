@@ -58,7 +58,8 @@ select = [
     "D",          # pydocstyle
     "PTH"         # pathlib
 ]
-ignore = ["D100", "D107", "D204", "D205",  "D212", "D301","D400", "D401", "D406", "D413", "D415", "D417", "F841","UP030","PLR0913","UP032","EM101","EM103","E501","B007","W293","UP009","W291","E702" ]  # ignore specific rules
+ignore = ["D1", "PTH118", "D204", "D205",  "D212", "D301","D400", "D401", "D406", "D413", "D415", "D417", "F841","UP030","PLR0913","UP032","EM101","EM103","E501","B007","W293","UP009","W291","E702" ]  # ignore specific rules
+#"D107", 
 
 [tool.ruff.lint.per-file-ignores]
 "acf.py" = ["SIM113", "F401", "PLR0915", "PLR0912", "PLR2004", "PLR5501", "F841"]
