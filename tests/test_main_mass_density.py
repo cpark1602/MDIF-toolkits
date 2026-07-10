@@ -55,3 +55,4 @@ def test_mass_density_profile():
 
     assert len(his_edges) > 0, "Histogram edges should not be empty"
     assert len(number_density_O) == len(his_edges) - 1, "Density profile length must match bins length"
+    print('Test finished.')
