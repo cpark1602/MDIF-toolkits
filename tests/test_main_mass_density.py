@@ -7,7 +7,7 @@ import warnings
 warnings.filterwarnings(action="once")
 import logging
 import os
-import MDa4IFtoolkits.mass_density
+import MDa4IFtoolkits
 
 logger = logging.getLogger("MDAnalysis.analysis.hbonds")
 
