@@ -22,12 +22,12 @@ class Conductivity:
         universe,
         selection1,
         selection2,
-        print_results_path,
+        #print_results_path,
         Ex,
         start=None,
         stop=None,
         step=None,
-        **kwargs,
+        #**kwargs,
     ):  
         self.u = universe                  # MDAnalysis Universe object
         self.seconds1 = time.time()        # Benchmark start time
