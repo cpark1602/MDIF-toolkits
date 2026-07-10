@@ -11,7 +11,7 @@ from MDAnalysis.analysis import distances
 
 
 class InterSlabRDF:
-    def __init__(self, u, box, cutoff_slab, binsize=0.1, exclusion_block=None):
+    def __init__(self, u, cutoff_slab, binsize=0.1, exclusion_block=None):
         """
         Parameters:
         -----------
@@ -50,10 +50,10 @@ class InterSlabRDF:
         self.rdf_slab = np.zeros(self.rdf_settings["bins"], dtype=np.float64)
         self.n_frames = 0
 
-    def _single_frame(self, ts, g1, g2):
+    def _single_frame(self, g1, g2):
         """Processes a single trajectory frame."""
         # Dynamically fetch current frame box dimension to handle NPT or NVT fluctuations
-        box = ts.dimensions
+        #box = ts.dimensions
         slab_volume = self.slab_width * self.init_box[1] * self.init_box[2]
 
         # Slicing atoms only located within the specified slab boundaries (along X-axis)

@@ -7,7 +7,7 @@ import warnings
 warnings.filterwarnings(action="once")
 import logging
 import os
-
+import mass_density
 logger = logging.getLogger("MDAnalysis.analysis.hbonds")
 
 
@@ -32,7 +32,6 @@ def test_mass_density_profile():
     # path_results='./results/atomic_charge/'   # where the NAC results are stored
     print_results_path = w_path + "/results/"  # To save the results
     
-    import mass_density
     dim = "x"
     bin_size = 0.02
     pbc = True
