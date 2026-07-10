@@ -4,7 +4,6 @@
 import warnings
 import logging
 import numpy as np
-from MDAnalysis import NoDataError
 
 # Setup warning filters and logger configuration to avoid excessive stdout noise
 warnings.filterwarnings(action="once")
@@ -55,7 +54,6 @@ class MSD:
         start=None,
         stop=None,
         step=None,
-        **kwargs,
     ):
         self.u = universe
         self.select = select
@@ -191,7 +189,7 @@ class MSD:
         # Evaluate collective average across particles
         self.timeseries = self.msds_by_particle.mean(axis=1)
 
-    def run(self, **kwargs):
+    def run(self):
         """
         Main execution manager looping through target trajectory boundaries 
         to cache positions before triggering final calculations.
