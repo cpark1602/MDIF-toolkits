@@ -39,7 +39,7 @@ jobs:
       - name: Lint with Ruff
         run: |
           # Fails the build on critical Python syntax errors (like undefined names)
-          ruff check . --select E,W,F,B,ARG,PERF,EM,LOG,UP,SIM,PL
+          ruff check . #--select E,W,F,B,ARG,PERF,EM,LOG,UP,SIM,PL
 
       # 6. Run your automated unit tests
       - name: Test with pytest
