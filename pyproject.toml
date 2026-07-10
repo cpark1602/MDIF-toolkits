@@ -44,7 +44,8 @@ line-length = 100  # increase max line length from 88 to 100 characters
 
 [tool.ruff.lint]
 #extend-select = ["PTH"]  # also include pydocstyle "D" and pathlib "PTH" rules # "D", 
-ignore = ["D107", "D301", "F841"]  # ignore specific rules
+ignore = ["D107", "D301", "F841","UP030","PLR0913","UP032","EM101","EM103","E501","B007","W293","UP009","W291","E702" ]  # ignore specific rules
+
 
 #[tool.ruff.pydocstyle]
 #convention = "pep257"  # select docstyle convention
