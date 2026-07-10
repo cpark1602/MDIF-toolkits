@@ -1,10 +1,10 @@
 #!/usr/bin/env python
+from MDa4IFtoolkits import mass_density
 import os
 import logging
 import MDAnalysis as mda
 import warnings
 warnings.filterwarnings(action="once")
-from MDa4IFtoolkits import mass_density
 
 logger = logging.getLogger("MDAnalysis.analysis.hbonds")
 

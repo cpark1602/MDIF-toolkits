@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from MDAnalysis import NoDataError
 from MDAnalysis.lib import distances

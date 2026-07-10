@@ -1,6 +1,5 @@
 import numpy as np
 from MDAnalysis.analysis import distances
-import sys
 
 class Kirkwood_Gk:
     """
