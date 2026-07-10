@@ -1,6 +1,6 @@
 import MDAnalysis as mda
 import os
-import MDa4IFtoolkits.dipole_angles
+import MDa4IFtoolkits.dipole_angles as dipole_angles
 
 def test_dipole_angles():
     w_path = "./tests/"
