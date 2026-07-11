@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "MDa4IFtoolkits"   # The unique name users will type into 'pip install'
+name = "MDa4IFtoolkits" 
 version = "0.1.0"
 authors = [
     { name="Chanbum Park", email="chanbum.park@ruhr-uni-bochum.de" }
@@ -22,7 +22,7 @@ dependencies = [
     "numpy>=1.19.5",
     "scipy>=1.5.3",
     "matplotlib>=3.3.4",
-    "mdanalysis>=2.0.0", # (Add any explicit MD parsing dependencies here)
+    "mdanalysis>=2.0.0", 
 ]
 
 [project.urls]
@@ -33,17 +33,15 @@ dependencies = [
 packages = ["src/MDa4IFtoolkits"]
 
 [project.scripts]
-mdif-run = "MDa4IFtoolkits.main:main" # Optional terminal execution shortcut
+mdif-run = "MDa4IFtoolkits.main:main" 
 
-# Add these two lines at the very bottom of the file:
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.ruff]
-line-length = 100  # increase max line length from 88 to 100 characters
+line-length = 100  
 
 [tool.ruff.lint]
-# Add this select block to turn on all the rule categories you want to scan!
 select = [
     "E", "W",     # pycodestyle
     "F",          # pyflakes
