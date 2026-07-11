@@ -1,6 +1,5 @@
 import MDAnalysis as mda
 import os
-#import MDa4IFtoolkits.acf as acf
 from MDa4IFtoolkits import acf
 
 def test_acf():

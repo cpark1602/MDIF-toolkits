@@ -1,6 +1,5 @@
 import MDAnalysis as mda
 import os
-#import MDa4IFtoolkits.rdf_slab as rdf_slab
 from MDa4IFtoolkits import rdf_slab
 
 def test_dipole_angles():

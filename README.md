@@ -42,8 +42,7 @@ Calculates the spatial mass distribution of different atomic species (e.g., wate
 ```bash
 # System setup
 import MDAnalysis as mda
-import MDa4IFtoolkits.mass_density as mass_den
-
+from MDa4IFtoolkits import mass_density
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
 boxY = 15.667
@@ -56,7 +55,7 @@ print_results_path = "/results/"
 dim = "x"
 bin_size = 0.02
 pbc = True
-_u_if = mass_den.Mass_density(
+_u_if = mass_density.Mass_density(
     u_if,
     box,
     print_results_path,
@@ -86,7 +85,7 @@ Analyzes the structural ordering and polarization of water molecules in proximit
 
 ```bash
 import MDAnalysis as mda
-import dipole_angles
+from MDa4IFtoolkits import dipole_angles
 
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
@@ -129,7 +128,7 @@ $$\tau_2 = \int_{0}^{\infty} C_2(t) \, dt$$.
 #### Usage
 ```bash
 import MDAnalysis as mda
-import acf
+from MDa4IFtoolkits import acf
 
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
@@ -173,7 +172,7 @@ $$g_{\text{slab}}(r) = \frac{\rho(r)}{\rho_{\text{slab}}}$$.
 
 ```bash
 import MDAnalysis as mda
-import rdf_slab
+from MDa4IFtoolkits import rdf_slab
 
 IdentityA = "O"
 IdentityB = "O"
@@ -221,7 +220,7 @@ Where $\mathbf{M}_i(r)$ is the net total sum of all molecular dipoles $\mathbf{\
 
 ```bash
 import MDAnalysis as mda
-import kirkwood_gk_interface
+from MDa4IFtoolkits import kirkwood_gk_interface
 
 u_if = mda.Universe("run-pos.pdb", "run-pos.dcd")
 boxX = 48.57
@@ -258,7 +257,7 @@ The individual conductivities ($\kappa_i$) are evaluated from the linear slope o
 #### Usage
 ```bash
 import MDAnalysis as mda
-import conductivity
+from MDa4IFtoolkits import conductivity
 
 pbc=True
 Ex = 0.01 # External Field
@@ -302,7 +301,7 @@ Where $d$ represents the dimensionality of the system (typically $d = 3$ for sta
 import os
 import numpy as np
 import MDAnalysis as mda
-import msd
+from MDa4IFtoolkits import msd 
 
 trj_file1 = "run-pos.pdb"
 trj_file2 = "run-pos.dcd"
