@@ -11,11 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Testing on the main modern Python versions
         python-version: ['3.9', '3.10', '3.11']
 
     steps:
-      # 1. Download your code onto the GitHub runner
+      # 1. Download code onto the GitHub runner
       - uses: actions/checkout@v4
 
       # 2. Set up the specific Python runtime from the matrix
@@ -24,13 +23,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # 3. Upgrade core pip tools and install your testing frameworks
+      # 3. Upgrade core pip tools and install testing frameworks
       - name: Install testing dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
           pip install ruff pytest  # <-- Changed flake8 to ruff
 
-      # 4. Install your actual package along with its requirements
+      # 4. Install actual package along with its requirements
       - name: Install MDIF-toolkits
         run: |
           pip install .
@@ -41,7 +40,7 @@ jobs:
           # Fails the build on critical Python syntax errors (like undefined names)
           ruff check . #--select E,W,F,B,ARG,PERF,EM,LOG,UP,SIM,PL
 
-      # 6. Run your automated unit tests
+      # 6. Run automated unit tests
       - name: Test with pytest
         run: |
           pytest
